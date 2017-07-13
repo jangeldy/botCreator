@@ -42,8 +42,9 @@ class Handling {
                 handle.setGlobalParam(bot, update, command);
                 handle.executeHandling();
                 step = command.getStep();
-
                 command = handle.getRedirectCommand();
+
+
                 while (command.isRedirect()) {
 
                     if (command.getHandlingClass() == null){
@@ -56,6 +57,8 @@ class Handling {
                     handle.setGlobalParam(bot, update, command);
                     handle.executeHandling();
                     step = command.getStep();
+                    command = handle.getRedirectCommand();
+
                 }
 
             } catch (Exception e) {
@@ -218,10 +221,14 @@ class Handling {
      */
     private AbstractHandle getHandleClass(String className) throws Exception {
 
-        Class<?> clazz = Class.forName("handling.impl." + className);
-        Constructor<?> ctor = clazz.getConstructor();
-        Object object = ctor.newInstance();
-        return (AbstractHandle) object;
+        if (className.equals(handle.getClass().getSimpleName())){
+            return handle;
+        } else {
+            Class<?> clazz = Class.forName("handling.impl." + className);
+            Constructor<?> ctor = clazz.getConstructor();
+            Object object = ctor.newInstance();
+            return (AbstractHandle) object;
+        }
     }
 
 }

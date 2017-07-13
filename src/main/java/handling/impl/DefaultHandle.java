@@ -8,6 +8,6 @@ public class DefaultHandle extends AbstractHandle {
 
     @Override
     public void handling() throws TelegramApiException {
-
+        redirect("STEP_1");
     }
 }
