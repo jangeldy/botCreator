@@ -15,14 +15,29 @@ import java.util.List;
 
 public class Keyboard {
 
-
     /**
-     * Создает ReplyKeyboard (клавиатуру) по переданным данным
-     * @param dataTables - данные (список keyboard_button по id keyboard_row)
-     * @param inline - внутри чата
+     * Создает ReplyKeyboard (клавиатуру) по id
+     * @param keyboardId - id таблицы keyboard
      * @return - ReplyKeyboard
      */
-    public ReplyKeyboard create(List<DataTable> dataTables, boolean inline) {
+    public ReplyKeyboard create(DbUtils dbUtils, int keyboardId) {
+
+        DataRec keyboard = dbUtils.queryDataRec("SELECT * FROM keyboard WHERE id = ?", keyboardId);
+        DataTable keyboardRows = dbUtils.query("SELECT * FROM keyboard_row WHERE id_keyboard = ?", keyboardId);
+        List<DataTable> dataTableList = new ArrayList<>();
+
+        for (DataRec keyboardRow : keyboardRows) {
+            DataTable buttonList = dbUtils.query(
+                    "SELECT * FROM keyboard_button WHERE id_keyboard_row = ?", keyboardRow.getInt("id")
+            );
+            dataTableList.add(buttonList);
+        }
+
+        return create(dataTableList, keyboard.getBoolean("inline"));
+    }
+
+
+    private ReplyKeyboard create(List<DataTable> dataTables, boolean inline) {
 
         if (inline) {
 
@@ -52,28 +67,6 @@ public class Keyboard {
 
         }
 
-    }
-
-
-    /**
-     * Создает ReplyKeyboard (клавиатуру) по id
-     * @param keyboardId - id таблицы keyboard
-     * @return - ReplyKeyboard
-     */
-    public ReplyKeyboard create(DbUtils dbUtils, int keyboardId) {
-
-        DataRec keyboard = dbUtils.queryDataRec("SELECT * FROM keyboard WHERE id = ?", keyboardId);
-        DataTable keyboardRows = dbUtils.query("SELECT * FROM keyboard_row WHERE id_keyboard = ?", keyboardId);
-        List<DataTable> dataTableList = new ArrayList<>();
-
-        for (DataRec keyboardRow : keyboardRows) {
-            DataTable buttonList = dbUtils.query(
-                    "SELECT * FROM keyboard_button WHERE id_keyboard_row = ?", keyboardRow.getInt("id")
-            );
-            dataTableList.add(buttonList);
-        }
-
-        return create(dataTableList, keyboard.getBoolean("inline"));
     }
 
 

@@ -4,6 +4,7 @@ import database.utils.DataRec;
 import database.utils.DbUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
@@ -67,6 +68,13 @@ public abstract class AbstractHandle {
                 "CLASSNAME : " + this.getClass().getSimpleName() + ";  " +
                 "STEP : " + step + ";");
         log.info("...");
+
+        try {
+            DeleteMessage deleteMessage = new DeleteMessage();
+            deleteMessage.setChatId(String.valueOf(chatId));
+            deleteMessage.setMessageId(messageId);
+            bot.deleteMessage(deleteMessage);
+        } catch (Exception ignore){}
 
         handling();
         command.setStep(step);

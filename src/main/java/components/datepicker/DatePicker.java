@@ -3,12 +3,8 @@ package components.datepicker;
 import com.google.gson.Gson;
 import database.utils.DataRec;
 import org.joda.time.DateTime;
-import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,31 +19,13 @@ public class DatePicker {
     private int startDay;
     private List<String> designate;
     private String step = null;
-    private TelegramLongPollingBot bot;
-    private int messageId;
-    private long chatId;
 
-    public DatePicker(
-            TelegramLongPollingBot bot,
-            int messageId, long chatId,
-            DataRec queryData
-    ){
-        this.bot = bot;
-        this.messageId = messageId;
-        this.chatId = chatId;
+    public DatePicker(DataRec queryData){
         this.designate = new ArrayList<>();
         calculateDates(queryData);
     }
 
-    public DatePicker(
-            TelegramLongPollingBot bot,
-            int messageId, long chatId,
-            DataRec queryData,
-            String step
-    ){
-        this.bot = bot;
-        this.messageId = messageId;
-        this.chatId = chatId;
+    public DatePicker(DataRec queryData, String step){
         this.designate = new ArrayList<>();
         this.step = step;
         calculateDates(queryData);
@@ -73,12 +51,6 @@ public class DatePicker {
 
     private void calculateDates(DataRec queryData) {
 
-        try {
-            DeleteMessage deleteMessage = new DeleteMessage();
-            deleteMessage.setChatId(String.valueOf(chatId));
-            deleteMessage.setMessageId(messageId);
-            bot.deleteMessage(deleteMessage);
-        } catch (Exception ignore){}
 
         if (queryData.containsKey("dp_selected")){
             selectedDate = new DateTime(queryData.getDate("dp_selected"));
@@ -125,17 +97,7 @@ public class DatePicker {
         designate.add(df.format(new Date()));
     }
 
-
-    public void execute() throws TelegramApiException {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText("Выберите дату");
-        message.setReplyMarkup(generateKeyboard());
-        bot.sendMessage(message);
-    }
-
-
-    private InlineKeyboardMarkup generateKeyboard() {
+    public InlineKeyboardMarkup getKeyboard() {
 
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
         String dateStr = df.format(date.toDate());
