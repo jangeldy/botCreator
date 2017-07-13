@@ -11,7 +11,7 @@ public class DbConnProps {
 
     public void initProperty() {
 
-        Logger log = LogManager.getLogger("DbConnProps");
+        Logger log = LogManager.getLogger(this.getClass().getSimpleName());
 
         try {
 

@@ -17,7 +17,7 @@ public class TelegramProps {
 
     private void getProps() {
 
-        Logger log = LogManager.getLogger("DbConnProps");
+        Logger log = LogManager.getLogger(this.getClass().getSimpleName());
 
         try {
 

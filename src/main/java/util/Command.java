@@ -11,6 +11,7 @@ public class Command {
     private AccessLevel accessLevel;
     private int messageId = -1;
     private long chatId = -1;
+    private boolean isRedirect = false;
 
     public Command() {
         this.queryData = new DataRec();
@@ -73,5 +74,13 @@ public class Command {
 
     public void setChatId(long chatId) {
         this.chatId = chatId;
+    }
+
+    public boolean isRedirect() {
+        return isRedirect;
+    }
+
+    public void setRedirect(boolean redirect) {
+        isRedirect = redirect;
     }
 }

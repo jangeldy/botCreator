@@ -16,6 +16,9 @@ public class Main {
         Logger log = LogManager.getLogger("Main");
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
 
+        // Здесь задаем имя проекта
+        System.setProperty("projectName", "botCreator");
+
         try {
 
             log.info("Запуск телеграм бота...");

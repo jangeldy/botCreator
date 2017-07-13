@@ -40,7 +40,7 @@ public abstract class AbstractHandle {
             Update update,
             Command command
     ){
-        this.log = LogManager.getLogger("AbstractHandle");
+        this.log = LogManager.getLogger(this.getClass().getSimpleName());
         this.dbUtils = new DbUtils();
         this.bot = bot;
         this.update = update;
@@ -57,8 +57,13 @@ public abstract class AbstractHandle {
 
     public void executeHandling() throws TelegramApiException {
 
+        String redirect = "";
+        if (command.isRedirect()){
+            redirect = "REDIRECT     ";
+        }
+
         log.info("...");
-        log.info("-----> " +
+        log.info("-----> " + redirect +
                 "CLASSNAME : " + this.getClass().getSimpleName() + ";   " +
                 "STEP : " + step + ";");
         log.info("...");
@@ -92,6 +97,7 @@ public abstract class AbstractHandle {
         }
 
         redirectCommand = rCommand;
+        redirectCommand.setRedirect(true);
     }
 
     /**
@@ -100,6 +106,7 @@ public abstract class AbstractHandle {
      */
     protected void redirect(String step){
 
+        redirectCommand.setRedirect(true);
         redirectCommand.setStep(step);
 
         if (redirectCommand.getChatId() == -1){
@@ -116,5 +123,30 @@ public abstract class AbstractHandle {
 
     }
 
+
+    /**
+     * Перенапрвления команды
+     * @param clazz - обрабатывающий класс
+     * @param step - шаг
+     */
+    protected void redirect(Class clazz, String step){
+
+        redirectCommand.setRedirect(true);
+        redirectCommand.setStep(step);
+        redirectCommand.setHandlingClass(clazz.getSimpleName());
+
+        if (redirectCommand.getChatId() == -1){
+            redirectCommand.setChatId(command.getChatId());
+        }
+
+        if (redirectCommand.getAccessLevel() == null){
+            redirectCommand.setAccessLevel(command.getAccessLevel());
+        }
+
+        if (redirectCommand.getStep() == null){
+            throw new RuntimeException("Ошибка при перенаправлений команды. Не задан 'step'!");
+        }
+
+    }
 
 }
