@@ -59,12 +59,12 @@ public abstract class AbstractHandle {
 
         String redirect = "";
         if (command.isRedirect()){
-            redirect = "REDIRECT     ";
+            redirect = "REDIRECT --> ";
         }
 
         log.info("...");
         log.info("-----> " + redirect +
-                "CLASSNAME : " + this.getClass().getSimpleName() + ";   " +
+                "CLASSNAME : " + this.getClass().getSimpleName() + ";  " +
                 "STEP : " + step + ";");
         log.info("...");
 
