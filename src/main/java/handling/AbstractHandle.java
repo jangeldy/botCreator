@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
 import util.AccessLevel;
 import util.Command;
 
@@ -56,7 +55,7 @@ public abstract class AbstractHandle {
         this.redirectCommand = new Command();
     }
 
-    public void executeHandling() throws TelegramApiException {
+    public void executeHandling() throws Exception {
 
         String redirect = "";
         if (command.isRedirect()){
@@ -78,7 +77,7 @@ public abstract class AbstractHandle {
         command.setStep(step);
     }
 
-    public abstract void handling() throws TelegramApiException;
+    public abstract void handling() throws Exception;
 
     public Command getRedirectCommand(){
         return redirectCommand;
