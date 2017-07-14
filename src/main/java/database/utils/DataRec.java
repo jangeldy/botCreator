@@ -24,6 +24,12 @@ public class DataRec extends HashMap<String, Object> {
     }
 
 
+    public DataRec set(String key, Object value){
+        put(key, value);
+        return this;
+    }
+
+
     /**
      * Конвертирует значение в нужный тип
      *

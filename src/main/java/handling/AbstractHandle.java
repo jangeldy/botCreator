@@ -63,11 +63,9 @@ public abstract class AbstractHandle {
             redirect = "REDIRECT --> ";
         }
 
-        log.info("...");
         log.info("-----> " + redirect +
                 "CLASSNAME : " + this.getClass().getSimpleName() + ";  " +
                 "STEP : " + step + ";");
-        log.info("...");
 
         try {
             DeleteMessage deleteMessage = new DeleteMessage();

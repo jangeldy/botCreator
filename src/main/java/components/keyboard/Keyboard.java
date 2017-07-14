@@ -1,8 +1,7 @@
 package components.keyboard;
 
+import com.google.gson.Gson;
 import database.utils.DataRec;
-import database.utils.DataTable;
-import database.utils.DbUtils;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -15,115 +14,140 @@ import java.util.List;
 
 public class Keyboard {
 
-    /**
-     * Создает ReplyKeyboard (клавиатуру) по id
-     * @param keyboardId - id таблицы keyboard
-     * @return - ReplyKeyboard
-     */
-    public ReplyKeyboard create(DbUtils dbUtils, int keyboardId) {
+    private int[] buttonCounts = null;
+    private List<List<InlineKeyboardButton>> inlineList;
+    private List<KeyboardRow> list;
+    private boolean inline;
 
-        DataRec keyboard = dbUtils.queryDataRec("SELECT * FROM keyboard WHERE id = ?", keyboardId);
-        DataTable keyboardRows = dbUtils.query("SELECT * FROM keyboard_row WHERE id_keyboard = ?", keyboardId);
-        List<DataTable> dataTableList = new ArrayList<>();
+    public Keyboard(int ...buttonCounts){
+        this.buttonCounts = buttonCounts;
+        this.inline = false;
+        list = new ArrayList<>();
+    }
 
-        for (DataRec keyboardRow : keyboardRows) {
-            DataTable buttonList = dbUtils.query(
-                    "SELECT * FROM keyboard_button WHERE id_keyboard_row = ?", keyboardRow.getInt("id")
-            );
-            dataTableList.add(buttonList);
-        }
-
-        return create(dataTableList, keyboard.getBoolean("inline"));
+    public Keyboard(boolean inline, int ...buttonCounts){
+        this.inline = inline;
+        this.buttonCounts = buttonCounts;
+        if (inline)inlineList = new ArrayList<>();
+        else list = new ArrayList<>();
     }
 
 
-    private ReplyKeyboard create(List<DataTable> dataTables, boolean inline) {
+    public ReplyKeyboard get() {
 
-        if (inline) {
+        if (inline){
+            return new InlineKeyboardMarkup().setKeyboard(inlineList);
+        } else {
+            return new ReplyKeyboardMarkup().setKeyboard(list)
+                    .setResizeKeyboard(true);
+        }
+
+    }
 
 
-            InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-            List<List<InlineKeyboardButton>> list = new ArrayList<>();
+    public InlineKeyboardButton addButton(String text, DataRec json) {
 
-            for (DataTable dataTable : dataTables) {
-                list.add(inlineKeyboardRow(dataTable));
+        if (!inline) {
+            throw new RuntimeException("Неверно использован метод");
+        }
+
+        List<InlineKeyboardButton> buttonList;
+        InlineKeyboardButton button = new InlineKeyboardButton()
+                .setText(text)
+                .setCallbackData(new Gson().toJson(json));
+
+        if (buttonCounts != null && buttonCounts.length > 0){
+
+            if (inlineList.size() == 0){
+
+                buttonList = new ArrayList<>();
+                buttonList.add(button);
+                inlineList.add(buttonList);
+
+            } else {
+
+                int buttonCount = buttonCounts[inlineList.size() - 1];
+                buttonList = inlineList.get(inlineList.size() - 1);
+
+                if (buttonList.size() == buttonCount){
+
+                    if (buttonCounts.length == inlineList.size()){
+                        throw new RuntimeException("Количество добавленных кнопок больше указанной");
+                    } else {
+
+                        buttonList = new ArrayList<>();
+                        buttonList.add(button);
+                        inlineList.add(buttonList);
+                    }
+
+                } else {
+                    buttonList.add(button);
+                }
+
             }
-
-            keyboardMarkup.setKeyboard(list);
-            return keyboardMarkup;
 
         } else {
 
-            ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-            List<KeyboardRow> list = new ArrayList<>();
-
-            for (DataTable dataTable : dataTables) {
-                list.add(keyboardRow(dataTable));
-            }
-
-            keyboardMarkup.setResizeKeyboard(true);
-            keyboardMarkup.setKeyboard(list);
-            return keyboardMarkup;
+            buttonList = new ArrayList<>();
+            buttonList.add(button);
+            inlineList.add(buttonList);
 
         }
 
-    }
-
-
-    private InlineKeyboardButton inlineButton(DataRec buttonData) {
-
-        InlineKeyboardButton button = new InlineKeyboardButton();
-
-        if (buttonData.hasValue("text"))
-            button.setText(buttonData.getString("text"));
-
-        if (buttonData.hasValue("url"))
-            button.setUrl(buttonData.getString("url"));
-
-        if (buttonData.hasValue("json"))
-            button.setCallbackData(buttonData.getString("json"));
-
-        if (buttonData.hasValue("query"))
-            button.setSwitchInlineQuery(buttonData.getString("query"));
-
-        if (buttonData.hasValue("query_chat"))
-            button.setSwitchInlineQueryCurrentChat(buttonData.getString("query_chat"));
-
-        if (buttonData.hasValue("pay"))
-            button.setPay(buttonData.getBoolean("pay"));
 
         return button;
     }
 
 
-    private KeyboardButton button(DataRec buttonData) {
+    public KeyboardButton addButton(String text) {
 
-        KeyboardButton button = new KeyboardButton();
+        if (inline) {
+            throw new RuntimeException("Неверно использован метод");
+        }
 
-        if (buttonData.hasValue("text"))
-            button.setText(buttonData.getString("text"));
+        KeyboardRow buttonList;
+        KeyboardButton button = new KeyboardButton().setText(text);
 
-        if (buttonData.hasValue("rq_contact"))
-            button.setRequestContact(buttonData.getBoolean("url"));
+        if (buttonCounts != null && buttonCounts.length > 0){
 
-        if (buttonData.hasValue("rq_location"))
-            button.setRequestContact(buttonData.getBoolean("rq_location"));
+            if (list.size() == 0){
+
+                buttonList = new KeyboardRow();
+                buttonList.add(button);
+                list.add(buttonList);
+
+            } else {
+
+                int buttonCount = buttonCounts[list.size() - 1];
+                buttonList = list.get(list.size() - 1);
+
+                if (buttonList.size() == buttonCount){
+
+                    if (buttonCounts.length == list.size()){
+                        throw new RuntimeException("Количество добавленных кнопок больше указанной");
+                    } else {
+
+                        buttonList = new KeyboardRow();
+                        buttonList.add(button);
+                        list.add(buttonList);
+                    }
+
+                } else {
+                    buttonList.add(button);
+                }
+
+            }
+
+        } else {
+
+            buttonList = new KeyboardRow();
+            buttonList.add(button);
+            list.add(buttonList);
+
+        }
+
 
         return button;
-    }
-
-
-    private KeyboardRow keyboardRow(DataTable buttonList) {
-        KeyboardRow keyboardRow = new KeyboardRow();
-        for (DataRec rec : buttonList) keyboardRow.add(button(rec));
-        return keyboardRow;
-    }
-
-
-    private List<InlineKeyboardButton> inlineKeyboardRow(DataTable dataTable) {
-        List<InlineKeyboardButton> keyboardRow = new ArrayList<>();
-        for (DataRec rec : dataTable) keyboardRow.add(inlineButton(rec));
-        return keyboardRow;
     }
 
 }
