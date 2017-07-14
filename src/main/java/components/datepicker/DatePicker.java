@@ -32,11 +32,11 @@ public class DatePicker {
     }
 
 
-    public DateTime getSelectedDate() {
+    public DateTime getDate() {
         return selectedDate;
     }
 
-    public String getSelectedDateStr() {
+    public String getDateStr() {
         if (selectedDate == null){
             return null;
         }else {
@@ -97,7 +97,7 @@ public class DatePicker {
         designate.add(df.format(new Date()));
     }
 
-    public InlineKeyboardMarkup getKeyboard() {
+    public InlineKeyboardMarkup generate() {
 
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
         String dateStr = df.format(date.toDate());
