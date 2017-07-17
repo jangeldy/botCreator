@@ -122,7 +122,7 @@ class Handling {
             dataTable = dbUtils.query("SELECT * FROM command WHERE command_text = ?", commandText);
 
             if (dataTable.size() > 1) {
-                throw new RuntimeException("Найдено более двух команд \"" + commandText + "\"");
+                throw new RuntimeException("Found more than two command_text \"" + commandText + "\"");
             }
         }
 

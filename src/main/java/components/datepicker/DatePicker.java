@@ -52,12 +52,12 @@ public class DatePicker {
     private void calculateDates(DataRec queryData) {
 
 
-        if (queryData.containsKey("dp_selected")){
-            selectedDate = new DateTime(queryData.getDate("dp_selected"));
+        if (queryData.containsKey("dp_sel")){
+            selectedDate = new DateTime(queryData.getDate("dp_sel"));
         }
 
-        if (queryData.containsKey("dp_date")){
-            date = new DateTime(queryData.getDate("dp_date"));
+        if (queryData.containsKey("dp_dt")){
+            date = new DateTime(queryData.getDate("dp_dt"));
         } else {
             date = new DateTime();
         }
@@ -102,7 +102,7 @@ public class DatePicker {
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
         String dateStr = df.format(date.toDate());
         DataRec rec = new DataRec();
-        rec.put("dp_date", dateStr);
+        rec.put("dp_dt", dateStr);
 
         if (step != null){
             rec.put("step", step);
@@ -140,7 +140,7 @@ public class DatePicker {
 
         List<InlineKeyboardButton> keyboardRow = new ArrayList<>();
 
-        rec.put("dp_prev", "dp_prev");
+        rec.put("dp_prev", "p");
         InlineKeyboardButton buttonPrevMonth = new InlineKeyboardButton();
         buttonPrevMonth.setText("<");
         buttonPrevMonth.setCallbackData(new Gson().toJson(rec));
@@ -152,7 +152,7 @@ public class DatePicker {
         button2.setCallbackData(new Gson().toJson(rec));
         keyboardRow.add(button2);
 
-        rec.put("dp_next", "dp_next");
+        rec.put("dp_next", "n");
         InlineKeyboardButton button3 = new InlineKeyboardButton();
         button3.setText(">");
         button3.setCallbackData(new Gson().toJson(rec));
@@ -182,10 +182,10 @@ public class DatePicker {
                 }
 
                 if (step != null){
-                    button.setCallbackData("{\"dp_selected\":" + day + monthYear
+                    button.setCallbackData("{\"dp_sel\":" + day + monthYear
                             + ", \"step\":" + step + "}");
                 } else {
-                    button.setCallbackData("{\"dp_selected\":" + day + monthYear + "}");
+                    button.setCallbackData("{\"dp_sel\":" + day + monthYear + "}");
                 }
                 keyboardRow.add(button);
                 startDay++;

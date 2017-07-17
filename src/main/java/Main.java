@@ -18,7 +18,7 @@ public class Main {
 
         try {
 
-            log.info("Запуск телеграм бота...");
+            log.info("Running telegrams bot...");
             initialize();
 
             Bot bot = new Bot();
@@ -28,7 +28,7 @@ public class Main {
             bot.setBotToken(props.getProp("botToken"));
 
             telegramBotsApi.registerBot(bot);
-            log.info("Телеграм бот запущен");
+            log.info("Telegrams bot is running");
 
         } catch (Exception e){
             e.printStackTrace();

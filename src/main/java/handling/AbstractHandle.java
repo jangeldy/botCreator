@@ -98,7 +98,7 @@ public abstract class AbstractHandle {
         }
 
         if (rCommand.getStep() == null){
-            throw new RuntimeException("Ошибка при перенаправлений команды. Не задан 'step'!");
+            throw new RuntimeException("Error in redirect command. Step can not be empty");
         }
 
         redirectCommand = rCommand;
@@ -123,7 +123,7 @@ public abstract class AbstractHandle {
         }
 
         if (redirectCommand.getStep() == null){
-            throw new RuntimeException("Ошибка при перенаправлений команды. Не задан 'step'!");
+            throw new RuntimeException("Error in redirect command. Step can not be empty");
         }
 
     }
@@ -149,7 +149,7 @@ public abstract class AbstractHandle {
         }
 
         if (redirectCommand.getStep() == null){
-            throw new RuntimeException("Ошибка при перенаправлений команды. Не задан 'step'!");
+            throw new RuntimeException("Error in redirect command. Step can not be empty");
         }
 
     }

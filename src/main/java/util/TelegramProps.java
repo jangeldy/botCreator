@@ -21,14 +21,14 @@ public class TelegramProps {
 
         try {
 
-            log.info("Чтение данных с файла telegram.properties...");
+            log.info("Reading data from a file telegram.properties...");
             ClassLoader classLoader = getClass().getClassLoader();
             InputStream inputStream = classLoader.getResourceAsStream("telegram.properties");
             properties.load(inputStream);
 
         } catch (Exception e) {
             e.printStackTrace();
-            log.info("!Ошибка. Файл telegram.properties не найден либо произошла ошибка при считываний");
+            log.info("Error! The file telegram.properties was not found or an error occurred while reading the data");
         }
 
     }

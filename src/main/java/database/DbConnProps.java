@@ -15,14 +15,14 @@ public class DbConnProps {
 
         try {
 
-            log.info("Чтение данных с файла app.properties...");
+            log.info("Reading data from a file app.properties...");
             ClassLoader classLoader = getClass().getClassLoader();
             InputStream inputStream = classLoader.getResourceAsStream("app.properties");
             properties.load(inputStream);
 
         }catch (Exception e){
             e.printStackTrace();
-            log.info("!Ошибка. Файл app.properties не найден или произошла ошибка при считываний");
+            log.info("Error! The file app.properties was not found or an error occurred while reading the data");
         }
 
     }

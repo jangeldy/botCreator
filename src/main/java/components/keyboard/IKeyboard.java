@@ -31,7 +31,7 @@ public class IKeyboard {
         }
         else {
             if (inlineList.size() == 0){
-                throw new RuntimeException("Вы не добавили кнопки");
+                throw new RuntimeException("You have not added any inline buttons");
             }
             else {
                 inlineTables.add(inlineList);
@@ -53,7 +53,7 @@ public class IKeyboard {
     public InlineKeyboardButton addButton(String text, DataRec json) {
 
         if (inlineTables == null){
-            throw new RuntimeException("Метод next не был вызван");
+            throw new RuntimeException("The method 'next' was not called");
         }
 
         List<InlineKeyboardButton> buttonList;
@@ -77,7 +77,7 @@ public class IKeyboard {
                 if (buttonList.size() == buttonCount){
 
                     if (buttonCounts.length == inlineList.size()){
-                        throw new RuntimeException("Количество добавленных кнопок больше указанной");
+                        throw new RuntimeException("The number of added buttons is more than the specified quantity");
                     } else {
 
                         buttonList = new ArrayList<>();

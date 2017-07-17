@@ -33,7 +33,7 @@ public class Keyboard {
         }
         else {
             if (list.size() == 0){
-                throw new RuntimeException("Вы не добавили кнопки");
+                throw new RuntimeException("You have not added any buttons");
             }
             else {
                 table.add(list);
@@ -56,7 +56,7 @@ public class Keyboard {
     public KeyboardButton addButton(String text) {
 
         if (table == null){
-            throw new RuntimeException("Метод next не был вызван");
+            throw new RuntimeException("The method 'next' was not called");
         }
 
         KeyboardRow buttonList;
@@ -78,7 +78,7 @@ public class Keyboard {
                 if (buttonList.size() == buttonCount){
 
                     if (buttonCounts.length == list.size()){
-                        throw new RuntimeException("Количество добавленных кнопок больше указанной");
+                        throw new RuntimeException("The number of added buttons is more than the specified quantity");
                     } else {
 
                         buttonList = new KeyboardRow();
