@@ -5,10 +5,13 @@ import database.utils.DbUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import util.AccessLevel;
 import util.Command;
+
+import java.util.List;
 
 public abstract class AbstractHandle {
 
@@ -29,6 +32,10 @@ public abstract class AbstractHandle {
     private Command redirectCommand;
     private Command command;
 
+    // исторя сообщении
+    private List<Integer> messageToClear;
+
+
     /**
      * Параметры
      * @param bot - bot
@@ -38,7 +45,8 @@ public abstract class AbstractHandle {
     public void setGlobalParam(
             TelegramLongPollingBot bot,
             Update update,
-            Command command
+            Command command,
+            List<Integer> messageToClear
     ){
         this.log = LogManager.getLogger(this.getClass().getSimpleName());
         this.dbUtils = new DbUtils();
@@ -53,6 +61,7 @@ public abstract class AbstractHandle {
         this.messageId = command.getMessageId();
         this.chatId = command.getChatId();
         this.redirectCommand = new Command();
+        this.messageToClear = messageToClear;
     }
 
     public void executeHandling() throws Exception {
@@ -66,12 +75,16 @@ public abstract class AbstractHandle {
                 "CLASSNAME : " + this.getClass().getSimpleName() + ";  " +
                 "STEP : " + step + ";");
 
-        try {
-            DeleteMessage deleteMessage = new DeleteMessage();
-            deleteMessage.setChatId(String.valueOf(chatId));
-            deleteMessage.setMessageId(messageId);
-            bot.deleteMessage(deleteMessage);
-        } catch (Exception ignore){}
+        for (int messageId : messageToClear){
+            try {
+                DeleteMessage deleteMessage = new DeleteMessage();
+                deleteMessage.setChatId(String.valueOf(chatId));
+                deleteMessage.setMessageId(messageId);
+                bot.deleteMessage(deleteMessage);
+            } catch (Exception ignore){}
+        }
+        messageToClear.clear();
+
 
         handling();
         command.setStep(step);
@@ -152,6 +165,23 @@ public abstract class AbstractHandle {
             throw new RuntimeException("Error in redirect command. Step can not be empty");
         }
 
+    }
+
+
+    /**
+     * Для очистки сообщения
+     * @param msgId - идентфикатор
+     */
+    protected void setMessageToClear(int msgId){
+        messageToClear.add(msgId);
+    }
+
+    /**
+     * Для очистки сообщения
+     * @param message - сообщение
+     */
+    protected void setMessageToClear(Message message){
+        messageToClear.add(message.getMessageId());
     }
 
 }

@@ -12,15 +12,18 @@ import util.Command;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 class Handling {
 
     private String step;
-    private String lastHandlingClass;
     private AbstractHandle handle;
+    private List<Integer> messageToClear;
 
     Handling() {
         handle = new DefaultHandle();
+        messageToClear = new ArrayList<>();
     }
 
 
@@ -39,7 +42,7 @@ class Handling {
 
                 checkCommand(command);
                 handle = getHandleClass(command.getHandlingClass());
-                handle.setGlobalParam(bot, update, command);
+                handle.setGlobalParam(bot, update, command, messageToClear);
                 handle.executeHandling();
                 step = command.getStep();
                 command = handle.getRedirectCommand();
@@ -48,13 +51,13 @@ class Handling {
                 while (command.isRedirect()) {
 
                     if (command.getHandlingClass() == null){
-                        String hc = getHandlingClass(command.getStep());
+                        String hc = findHandlingClass(command.getStep());
                         command.setHandlingClass(hc);
                     }
 
                     checkCommand(command);
                     handle = getHandleClass(command.getHandlingClass());
-                    handle.setGlobalParam(bot, update, command);
+                    handle.setGlobalParam(bot, update, command, messageToClear);
                     handle.executeHandling();
                     step = command.getStep();
                     command = handle.getRedirectCommand();
@@ -74,15 +77,9 @@ class Handling {
      */
     private void checkCommand(Command command){
         if (command.getHandlingClass() == null) {
-            if (lastHandlingClass == null){
-                lastHandlingClass = "DefaultHandle";
-            }
-
-            command.setHandlingClass(lastHandlingClass);
+            command.setHandlingClass(handle.getClass().getSimpleName());
             command.setStep(step);
-
         } else {
-            lastHandlingClass = command.getHandlingClass();
             step = command.getStep();
         }
     }
@@ -151,7 +148,7 @@ class Handling {
      * @param step - шаг
      * @return - String className
      */
-    private String getHandlingClass(String step) {
+    private String findHandlingClass(String step) {
         DbUtils dbUtils = new DbUtils();
         DataRec rec = dbUtils.queryDataRec("SELECT * FROM command WHERE step = ?", step);
         return rec.getString("handling_class");
