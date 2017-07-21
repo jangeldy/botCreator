@@ -1,16 +1,22 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import database.utils.DataRec;
-import database.utils.DataTable;
-import database.utils.DbUtils;
 import handling.AbstractHandle;
 import handling.impl.DefaultHandle;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import util.AccessLevel;
-import util.Command;
+import util.GlobalParam;
+import util.database.ut.DataRec;
+import util.database.ut.DataTable;
+import util.database.ut.DbUtils;
+import util.stepmapping.Mapping;
+import util.stepmapping.StepMapping;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +26,16 @@ class Handling {
     private String step;
     private AbstractHandle handle;
     private List<Integer> messageToClear;
+    private Logger log;
 
     Handling() {
         handle = new DefaultHandle();
         messageToClear = new ArrayList<>();
+        this.log = LogManager.getLogger(this.getClass().getSimpleName());
     }
 
+    ////TODO проверка наименований step
+    ////TODO параметры для step
 
     /**
      * Обработка входящих команд
@@ -34,36 +44,17 @@ class Handling {
      */
     void start(Bot bot, Update update, Message message) {
 
-        Command command = getCommand(update, message.getChatId());
+        GlobalParam globalParam = getGlobalParam(update, message.getChatId());
+        Mapping mapping = getMapping(update, globalParam.getQueryData(), step);
+
         if (message.isUserMessage() &&
-                command.getAccessLevel() != AccessLevel.WITHOUT_ACCESS) {
+                globalParam.getAccessLevel() != AccessLevel.WITHOUT_ACCESS) {
 
             try {
-
-                checkCommand(command);
-                handle = getHandleClass(command.getHandlingClass());
-                handle.setGlobalParam(bot, update, command, messageToClear);
-                handle.executeHandling();
-                step = command.getStep();
-                command = handle.getRedirectCommand();
-
-
-                while (command.isRedirect()) {
-
-                    if (command.getHandlingClass() == null){
-                        String hc = findHandlingClass(command.getStep());
-                        command.setHandlingClass(hc);
-                    }
-
-                    checkCommand(command);
-                    handle = getHandleClass(command.getHandlingClass());
-                    handle.setGlobalParam(bot, update, command, messageToClear);
-                    handle.executeHandling();
-                    step = command.getStep();
-                    command = handle.getRedirectCommand();
-
+                mapping = runHandlingMethod(bot, update, globalParam, mapping);
+                while (mapping.isRedirect()) {
+                    mapping = runHandlingMethod(bot, update, globalParam, mapping);
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -72,86 +63,66 @@ class Handling {
 
 
     /**
-     * Проверка команды на параметры
-     * @param command - команда
-     */
-    private void checkCommand(Command command){
-        if (command.getHandlingClass() == null) {
-            command.setHandlingClass(handle.getClass().getSimpleName());
-            command.setStep(step);
-        } else {
-            step = command.getStep();
-        }
-    }
-
-
-    /**
      * Ищет команду по базе
      * @param update - объект входящего запроса
-     * @return - commandEntity
+     * @param chatId - chatId
+     * @return - GlobalParam
      */
-    private Command getCommand(Update update, long chatId) {
+    private GlobalParam getGlobalParam(Update update, long chatId) {
 
-        Command command = new Command();
-        AccessLevel access = getAccessLevel(chatId);
-        DataRec queryData = getQueryData(update);
-        String commandText;
+        GlobalParam globalParam = new GlobalParam();
+        String inputText;
         int messageId;
 
-        DbUtils dbUtils = new DbUtils();
-        DataTable dataTable = null;
-
-
         if (update.getMessage() == null) {
-
-            commandText = update.getCallbackQuery().getMessage().getText();
+            inputText = update.getCallbackQuery().getMessage().getText();
             messageId = update.getCallbackQuery().getMessage().getMessageId();
-
-            if (queryData.containsKey("step")) {
-                dataTable = dbUtils.query("SELECT * FROM command WHERE step = ?",
-                        queryData.getString("step"));
-            }
-
         } else {
-
-            commandText = update.getMessage().getText();
+            inputText = update.getMessage().getText();
             messageId = update.getMessage().getMessageId();
-            dataTable = dbUtils.query("SELECT * FROM command WHERE command_text = ?", commandText);
-
-            if (dataTable.size() > 1) {
-                throw new RuntimeException("Found more than two command_text \"" + commandText + "\"");
-            }
         }
 
-        if (dataTable != null && dataTable.size() == 1) {
-
-            DataRec rec = dataTable.get(0);
-            command.setHandlingClass(rec.getString("handling_class"));
-            command.setStep(rec.getString("step"));
-
-        } else if (queryData.containsKey("handling_class")) {
-            command.setHandlingClass(queryData.getString("handling_class"));
-        }
-
-        command.setMessageId(messageId);
-        command.setCommandText(commandText);
-        command.setChatId(chatId);
-        command.setAccessLevel(access);
-        command.setQueryData(queryData);
-        return command;
+        globalParam.setMessageId(messageId);
+        globalParam.setInputText(inputText);
+        globalParam.setChatId(chatId);
+        globalParam.setAccessLevel(getAccessLevel(chatId));
+        globalParam.setQueryData(getQueryData(update));
+        return globalParam;
     }
 
 
     /**
-     * Поиск обрабатывающего класса
-     * в базе по step
-     * @param step - шаг
-     * @return - String className
+     * Ищет класс и метод для выполнения
+     * @param update - объект входящего запроса
+     * @param queryData - скрытые данные инлайн кнопки
+     * @return - Mapping
      */
-    private String findHandlingClass(String step) {
-        DbUtils dbUtils = new DbUtils();
-        DataRec rec = dbUtils.queryDataRec("SELECT * FROM command WHERE step = ?", step);
-        return rec.getString("handling_class");
+    private Mapping getMapping(Update update, DataRec queryData, String step) {
+
+        Mapping mapping = null;
+        if (update.getMessage() == null) {
+
+            if (queryData.containsKey("step")) {
+                String qd_step = queryData.getString("step");
+                if (StepMapping.containsStep(qd_step)){
+                    mapping = StepMapping.getMappingByStep(qd_step);
+                }
+            }
+
+        }
+        else {
+
+            String commandText = update.getMessage().getText();
+            if (StepMapping.containsCommandText(commandText)){
+                mapping = StepMapping.getMappingByCommandText(commandText);
+            }
+        }
+
+        if (mapping == null) {
+            mapping = StepMapping.getMappingByStep(step);
+        }
+
+        return mapping;
     }
 
 
@@ -211,21 +182,72 @@ class Handling {
 
 
     /**
-     * Возвращает обрабатывающий класс
-     * @param className - наименование класса
-     * @return - AbstractHandle
-     * @throws Exception - ClassNotFoundException
+     * Запуск обрабатывающего метода соответствующего класса
+     * @param bot - bot
+     * @param update - объект входящего запроса
+     * @param globalParam - параметры
+     * @param mapping - маппинг
+     * @return redirectMapping
+     * @throws Exception - Exception
      */
-    private AbstractHandle getHandleClass(String className) throws Exception {
+    private Mapping runHandlingMethod(
+            Bot bot, Update update,
+            GlobalParam globalParam, Mapping mapping
+    ) throws Exception {
+
+        // Очистка сообщений
+        for (int messageId : messageToClear){
+            try {
+                DeleteMessage deleteMessage = new DeleteMessage();
+                deleteMessage.setChatId(String.valueOf(globalParam.getChatId()));
+                deleteMessage.setMessageId(messageId);
+                bot.deleteMessage(deleteMessage);
+            } catch (Exception ignore){}
+        }
+        messageToClear.clear();
+
+
+        // вывод маппинга в консоль
+        printMapping(mapping);
+
+
+        // запсук метода
+        String className = mapping.getHandleClassName();
 
         if (className.equals(handle.getClass().getSimpleName())){
-            return handle;
-        } else {
+            Class<?> clazz = handle.getClass();
+            handle.setGlobalParam(bot, update, globalParam, messageToClear);
+            Method method = clazz.getMethod(mapping.getHandleMethod());
+            method.invoke(null);
+            step = handle.getChangedStep();
+            return handle.getRedirect();
+        }
+        else {
             Class<?> clazz = Class.forName("handling.impl." + className);
             Constructor<?> ctor = clazz.getConstructor();
-            Object object = ctor.newInstance();
-            return (AbstractHandle) object;
+            handle = (AbstractHandle) ctor.newInstance();
+            handle.setGlobalParam(bot, update, globalParam, messageToClear);
+            Method method = clazz.getMethod(mapping.getHandleMethod());
+            method.invoke(null);
+            step = handle.getChangedStep();
+            return handle.getRedirect();
         }
+    }
+
+
+    private void printMapping(Mapping mapping){
+
+        String redirect = "";
+        if (mapping.isRedirect()){
+            redirect = "REDIRECT --> ";
+        }
+
+        log.info("-----> " + redirect +
+                "ClassName : " + mapping.getHandleClassName() + ";  " +
+                "MethodName : " + mapping.getHandleMethod() + ";  " +
+                "Step : " + mapping.getStep() + ";  " +
+                "CommandText : " + mapping.getCommandText() + ";"
+        );
     }
 
 }

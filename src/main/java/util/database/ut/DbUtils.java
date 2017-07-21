@@ -1,6 +1,6 @@
-package database.utils;
+package util.database.ut;
 
-import database.DbConn;
+import util.database.DbConn;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

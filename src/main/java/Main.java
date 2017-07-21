@@ -1,11 +1,12 @@
 import bgtasks.SchedulingConfig;
 import bgtasks.SchedulingTasks;
-import database.DbConnProps;
+import util.database.DbConnProps;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
+import util.stepmapping.StepMapping;
 import util.TelegramProps;
 
 public class Main {
@@ -35,7 +36,8 @@ public class Main {
         }
     }
 
-    private static void initialize() {
+    private static void initialize() throws Exception {
+        StepMapping.initializeMapping();
         new AnnotationConfigApplicationContext(SchedulingConfig.class);
         new DbConnProps().initProperty();
         ApiContextInitializer.init();

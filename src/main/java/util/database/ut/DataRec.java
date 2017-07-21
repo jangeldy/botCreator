@@ -1,4 +1,4 @@
-package database.utils;
+package util.database.ut;
 
 import org.joda.time.DateTime;
 

@@ -1,4 +1,4 @@
-package database;
+package util.database;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

@@ -1,6 +1,6 @@
 package util;
 
-import database.utils.DataRec;
+import util.database.ut.DataRec;
 
 public class Json {
 

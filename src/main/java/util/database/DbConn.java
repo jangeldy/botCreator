@@ -1,4 +1,4 @@
-package database;
+package util.database;
 
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 

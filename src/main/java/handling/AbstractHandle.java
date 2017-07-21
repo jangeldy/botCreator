@@ -1,15 +1,16 @@
 package handling;
 
-import database.utils.DataRec;
-import database.utils.DbUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import util.AccessLevel;
-import util.Command;
+import util.GlobalParam;
+import util.database.ut.DataRec;
+import util.database.ut.DbUtils;
+import util.stepmapping.Mapping;
+import util.stepmapping.StepMapping;
 
 import java.util.List;
 
@@ -22,30 +23,27 @@ public abstract class AbstractHandle {
 
     // параметры команды
     protected String step;
-    protected String commandText;
+    protected String inputText;
     protected DataRec queryData;
     protected AccessLevel accessLevel;
     protected int messageId;
     protected long chatId;
 
-    // перенаправление команды
-    private Command redirectCommand;
-    private Command command;
-
-    // исторя сообщении
+    //
     private List<Integer> messageToClear;
+    private Mapping redirectMapping;
 
 
     /**
      * Параметры
      * @param bot - bot
      * @param update - update
-     * @param command - command
+     * @param globalParam - globalParam
      */
     public void setGlobalParam(
             TelegramLongPollingBot bot,
             Update update,
-            Command command,
+            GlobalParam globalParam,
             List<Integer> messageToClear
     ){
         this.log = LogManager.getLogger(this.getClass().getSimpleName());
@@ -53,70 +51,23 @@ public abstract class AbstractHandle {
         this.bot = bot;
         this.update = update;
 
-        this.command = command;
-        this.step = command.getStep();
-        this.commandText = command.getCommandText();
-        this.queryData = command.getQueryData();
-        this.accessLevel = command.getAccessLevel();
-        this.messageId = command.getMessageId();
-        this.chatId = command.getChatId();
-        this.redirectCommand = new Command();
+        this.inputText = globalParam.getInputText();
+        this.redirectMapping = new Mapping();
+        this.queryData = globalParam.getQueryData();
+        this.accessLevel = globalParam.getAccessLevel();
+        this.messageId = globalParam.getMessageId();
+        this.chatId = globalParam.getChatId();
         this.messageToClear = messageToClear;
     }
 
-    public void executeHandling() throws Exception {
-
-        String redirect = "";
-        if (command.isRedirect()){
-            redirect = "REDIRECT --> ";
-        }
-
-        log.info("-----> " + redirect +
-                "CLASSNAME : " + this.getClass().getSimpleName() + ";  " +
-                "STEP : " + step + ";");
-
-        for (int messageId : messageToClear){
-            try {
-                DeleteMessage deleteMessage = new DeleteMessage();
-                deleteMessage.setChatId(String.valueOf(chatId));
-                deleteMessage.setMessageId(messageId);
-                bot.deleteMessage(deleteMessage);
-            } catch (Exception ignore){}
-        }
-        messageToClear.clear();
-
-
-        handling();
-        command.setStep(step);
+    public String getChangedStep() {
+        return step;
     }
 
-    public abstract void handling() throws Exception;
-
-    public Command getRedirectCommand(){
-        return redirectCommand;
+    public Mapping getRedirect(){
+        return redirectMapping;
     }
 
-    /**
-     * Перенапрвления команды
-     * @param rCommand - параметры команды
-     */
-    protected void redirect(Command rCommand){
-
-        if (rCommand.getChatId() == -1){
-            rCommand.setChatId(command.getChatId());
-        }
-
-        if (rCommand.getAccessLevel() == null){
-            rCommand.setAccessLevel(command.getAccessLevel());
-        }
-
-        if (rCommand.getStep() == null){
-            throw new RuntimeException("Error in redirect command. Step can not be empty");
-        }
-
-        redirectCommand = rCommand;
-        redirectCommand.setRedirect(true);
-    }
 
     /**
      * Перенапрвления команды
@@ -124,46 +75,14 @@ public abstract class AbstractHandle {
      */
     protected void redirect(String step){
 
-        redirectCommand.setRedirect(true);
-        redirectCommand.setStep(step);
-
-        if (redirectCommand.getChatId() == -1){
-            redirectCommand.setChatId(command.getChatId());
-        }
-
-        if (redirectCommand.getAccessLevel() == null){
-            redirectCommand.setAccessLevel(command.getAccessLevel());
-        }
-
-        if (redirectCommand.getStep() == null){
+        if (step == null
+                || step.trim().equals("")
+                || StepMapping.containsStep(step)){
             throw new RuntimeException("Error in redirect command. Step can not be empty");
         }
 
-    }
-
-
-    /**
-     * Перенапрвления команды
-     * @param clazz - обрабатывающий класс
-     * @param step - шаг
-     */
-    protected void redirect(Class clazz, String step){
-
-        redirectCommand.setRedirect(true);
-        redirectCommand.setStep(step);
-        redirectCommand.setHandlingClass(clazz.getSimpleName());
-
-        if (redirectCommand.getChatId() == -1){
-            redirectCommand.setChatId(command.getChatId());
-        }
-
-        if (redirectCommand.getAccessLevel() == null){
-            redirectCommand.setAccessLevel(command.getAccessLevel());
-        }
-
-        if (redirectCommand.getStep() == null){
-            throw new RuntimeException("Error in redirect command. Step can not be empty");
-        }
+        redirectMapping = StepMapping.getMappingByStep(step);
+        redirectMapping.setRedirect(true);
 
     }
 

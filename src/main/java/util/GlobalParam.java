@@ -1,47 +1,28 @@
 package util;
 
-import database.utils.DataRec;
+import util.database.ut.DataRec;
 
-public class Command {
+public class GlobalParam {
 
-    private String handlingClass = null;
-    private String step = null;
-    private String commandText = null;
+    private String inputText;
     private DataRec queryData;
     private AccessLevel accessLevel;
     private int messageId = -1;
     private long chatId = -1;
-    private boolean isRedirect = false;
 
-    public Command() {
+    public GlobalParam() {
         this.queryData = new DataRec();
         this.accessLevel = AccessLevel.READ;
         this.messageId = -1;
         this.chatId = -1;
     }
 
-    public String getHandlingClass() {
-        return handlingClass;
+    public String getInputText() {
+        return inputText;
     }
 
-    public void setHandlingClass(String handlingClass) {
-        this.handlingClass = handlingClass;
-    }
-
-    public String getStep() {
-        return step;
-    }
-
-    public void setStep(String step) {
-        this.step = step;
-    }
-
-    public String getCommandText() {
-        return commandText;
-    }
-
-    public void setCommandText(String commandText) {
-        this.commandText = commandText;
+    public void setInputText(String inputText) {
+        this.inputText = inputText;
     }
 
     public DataRec getQueryData() {
@@ -76,11 +57,4 @@ public class Command {
         this.chatId = chatId;
     }
 
-    public boolean isRedirect() {
-        return isRedirect;
-    }
-
-    public void setRedirect(boolean redirect) {
-        isRedirect = redirect;
-    }
 }
