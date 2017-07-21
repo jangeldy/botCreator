@@ -93,7 +93,7 @@ class Handling {
 
     /**
      * Ищет класс и метод для выполнения
-     * @param update - объект входящего запроса
+     * @param update    - объект входящего запроса
      * @param queryData - скрытые данные инлайн кнопки
      * @return - Mapping
      */
@@ -104,16 +104,15 @@ class Handling {
 
             if (queryData.containsKey("step")) {
                 String qd_step = queryData.getString("step");
-                if (StepMapping.containsStep(qd_step)){
+                if (StepMapping.containsStep(qd_step)) {
                     mapping = StepMapping.getMappingByStep(qd_step);
                 }
             }
 
-        }
-        else {
+        } else {
 
             String commandText = update.getMessage().getText();
-            if (StepMapping.containsCommandText(commandText)){
+            if (StepMapping.containsCommandText(commandText)) {
                 mapping = StepMapping.getMappingByCommandText(commandText);
             }
         }
@@ -143,8 +142,8 @@ class Handling {
                     Type token = new TypeToken<DataRec>(){}.getType();
                     queryData = new Gson().fromJson(queryText, token);
 
-                    for (DataRec.Entry<String, Object> entry:queryData.entrySet()){
-                        if (entry.getValue() instanceof Double){
+                    for (DataRec.Entry<String, Object> entry : queryData.entrySet()) {
+                        if (entry.getValue() instanceof Double) {
                             Double value = (Double) entry.getValue();
                             entry.setValue(value.intValue());
                         }
@@ -183,10 +182,10 @@ class Handling {
 
     /**
      * Запуск обрабатывающего метода соответствующего класса
-     * @param bot - bot
-     * @param update - объект входящего запроса
+     * @param bot         - bot
+     * @param update      - объект входящего запроса
      * @param globalParam - параметры
-     * @param mapping - маппинг
+     * @param mapping     - маппинг
      * @return redirectMapping
      * @throws Exception - Exception
      */
@@ -196,13 +195,13 @@ class Handling {
     ) throws Exception {
 
         // Очистка сообщений
-        for (int messageId : messageToClear){
+        for (int messageId : messageToClear) {
             try {
                 DeleteMessage deleteMessage = new DeleteMessage();
                 deleteMessage.setChatId(String.valueOf(globalParam.getChatId()));
                 deleteMessage.setMessageId(messageId);
                 bot.deleteMessage(deleteMessage);
-            } catch (Exception ignore){}
+            } catch (Exception ignore) {}
         }
         messageToClear.clear();
 
@@ -214,7 +213,7 @@ class Handling {
         // запсук метода
         String className = mapping.getHandleClassName();
 
-        if (className.equals(handle.getClass().getSimpleName())){
+        if (className.equals(handle.getClass().getSimpleName())) {
             Class<?> clazz = handle.getClass();
             handle.setGlobalParam(bot, update, globalParam, messageToClear);
             Method method = clazz.getMethod(mapping.getHandleMethod());
@@ -235,10 +234,10 @@ class Handling {
     }
 
 
-    private void printMapping(Mapping mapping){
+    private void printMapping(Mapping mapping) {
 
         String redirect = "";
-        if (mapping.isRedirect()){
+        if (mapping.isRedirect()) {
             redirect = "REDIRECT --> ";
         }
 
