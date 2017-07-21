@@ -30,6 +30,8 @@ public class StepMapping {
                         throw new Exception("There is no step for the class " + clazz.getSimpleName());
                     }
 
+                    checkStepName(clazz.getSimpleName(), step.value());
+
                     if (!stepMappingMap.containsKey(step.value())){
 
                         Mapping mapping = new Mapping();
@@ -74,6 +76,18 @@ public class StepMapping {
             }
         }
     }
+
+    private static void checkStepName(String className, String stepName) throws Exception {
+
+        char[] stepNameChar = stepName.toCharArray();
+        char[] classNameChar = className.toCharArray();
+
+        if (stepNameChar[0] != classNameChar[0]){
+            throw new Exception("The step name is set incorrectly; \n" +
+                    "The step name must begin with the first letter of the class name");
+        }
+    }
+
 
     public static boolean containsStep(String step){
         return stepMappingMap.containsKey(step);

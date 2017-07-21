@@ -9,6 +9,7 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import util.AccessLevel;
 import util.GlobalParam;
+import util.StepParam;
 import util.database.ut.DataRec;
 import util.database.ut.DataTable;
 import util.database.ut.DbUtils;
@@ -35,7 +36,6 @@ class Handling {
     }
 
     ////TODO проверка наименований step
-    ////TODO параметры для step
 
     /**
      * Обработка входящих команд
@@ -214,20 +214,33 @@ class Handling {
         String className = mapping.getHandleClassName();
 
         if (className.equals(handle.getClass().getSimpleName())) {
+
             Class<?> clazz = handle.getClass();
             handle.setGlobalParam(bot, update, globalParam, messageToClear);
+
             Method method = clazz.getMethod(mapping.getHandleMethod());
             method.invoke(null);
+
+            StepParam stepParam = new StepParam(globalParam.getChatId(), mapping.getStep());
+            stepParam.remove();
+
             step = handle.getChangedStep();
             return handle.getRedirect();
         }
         else {
+
             Class<?> clazz = Class.forName("handling.impl." + className);
             Constructor<?> ctor = clazz.getConstructor();
+
             handle = (AbstractHandle) ctor.newInstance();
             handle.setGlobalParam(bot, update, globalParam, messageToClear);
+
             Method method = clazz.getMethod(mapping.getHandleMethod());
             method.invoke(null);
+
+            StepParam stepParam = new StepParam(globalParam.getChatId(), mapping.getStep());
+            stepParam.remove();
+
             step = handle.getChangedStep();
             return handle.getRedirect();
         }
