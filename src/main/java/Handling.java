@@ -219,7 +219,7 @@ class Handling {
             handle.setGlobalParam(bot, update, globalParam, messageToClear);
 
             Method method = clazz.getMethod(mapping.getHandleMethod());
-            method.invoke(null);
+            method.invoke(handle);
 
             StepParam stepParam = new StepParam(globalParam.getChatId(), mapping.getStep());
             stepParam.remove();
@@ -236,7 +236,7 @@ class Handling {
             handle.setGlobalParam(bot, update, globalParam, messageToClear);
 
             Method method = clazz.getMethod(mapping.getHandleMethod());
-            method.invoke(null);
+            method.invoke(handle);
 
             StepParam stepParam = new StepParam(globalParam.getChatId(), mapping.getStep());
             stepParam.remove();

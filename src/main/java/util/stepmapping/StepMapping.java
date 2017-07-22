@@ -83,7 +83,7 @@ public class StepMapping {
         char[] classNameChar = className.toCharArray();
 
         if (stepNameChar[0] != classNameChar[0]){
-            throw new Exception("The step name is set incorrectly; \n" +
+            throw new Exception("The step name is set incorrectly in class " + className + "; \n" +
                     "The step name must begin with the first letter of the class name");
         }
     }
@@ -99,10 +99,10 @@ public class StepMapping {
 
 
     public static boolean containsCommandText(String step){
-        return stepMappingMap.containsKey(step);
+        return commandMappingMap.containsKey(step);
     }
 
     public static Mapping getMappingByCommandText(String commandText){
-        return stepMappingMap.get(commandText);
+        return commandMappingMap.get(commandText);
     }
 }

@@ -15,11 +15,11 @@ public class StartHandle extends AbstractHandle {
     private UsersDao usersDao = daoFactory.getUsersDao();
 
 
-
-    @Step(value = "start", commandText = "/start")
+    @Step(value = "S_start", commandText = "/start")
     public void start() throws Exception {
 
-        if (!usersDao.checkUser(chatId)){
+        log.info("dsfsdfsd");
+/*        if (!usersDao.checkUser(chatId)){
 
             IKeyboard kb = new IKeyboard();
             kb.next();
@@ -38,7 +38,7 @@ public class StartHandle extends AbstractHandle {
                             .setReplyMarkup(kb.generate())
                     )
             );
-        }
+        }*/
 
     }
 }
