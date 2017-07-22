@@ -1,7 +1,6 @@
 package database;
 
-import database.dao.PositionDao;
-import database.dao.PositionDaoImpl;
+import database.dao.*;
 import util.databaseconfig.DataBaseConfig;
 
 import javax.sql.DataSource;
@@ -14,5 +13,13 @@ public class DaoFactory {
 
     public PositionDao getPositionDao() {
         return new PositionDaoImpl(getDataSource());
+    }
+
+    public ConstructiveDao getConstructivDao() {
+        return new  ConstructiveDaoImpl(getDataSource());
+    }
+
+    public UsersDao getUsersDao() {
+        return new UsersDaoImpl(getDataSource());
     }
 }

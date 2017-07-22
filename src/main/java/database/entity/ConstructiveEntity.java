@@ -1,10 +1,9 @@
 package database.entity;
 
-public class PositionEntity {
-
+public class ConstructiveEntity {
+    
     private int id;
     private String name;
-    private long chatId;
 
     public int getId() {
         return id;

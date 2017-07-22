@@ -10,14 +10,15 @@ import java.util.List;
 
 public class PositionDaoImpl implements PositionDao {
 
-    private DataBaseUtils dbUtils;
+    private DataBaseUtils utils;
 
     public PositionDaoImpl(DataSource source) {
-        this.dbUtils = new DataBaseUtils(source);
+        this.utils = new DataBaseUtils(source);
     }
 
+    @Override
     public List<PositionEntity> getList(){
-        return dbUtils.query("SELECT  * FROM position", this::mapper);
+        return utils.query("SELECT * FROM position", this::mapper);
     }
 
     private PositionEntity mapper(ResultSet rs, int index) throws SQLException {
