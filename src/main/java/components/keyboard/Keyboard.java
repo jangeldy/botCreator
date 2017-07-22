@@ -49,7 +49,10 @@ public class Keyboard {
             keyboard.addAll(list);
         }
         keyboard.addAll(list);
-        return new ReplyKeyboardMarkup().setKeyboard(keyboard);
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        keyboardMarkup.setKeyboard(keyboard);
+        keyboardMarkup.setResizeKeyboard(true);
+        return keyboardMarkup;
     }
 
 

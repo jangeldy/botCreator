@@ -32,10 +32,9 @@ class Handling {
     Handling() {
         handle = new DefaultHandle();
         messageToClear = new ArrayList<>();
-        this.log = LogManager.getLogger(this.getClass().getSimpleName());
+        this.log = LogManager.getLogger("Handling");
     }
 
-    ////TODO проверка наименований step
 
     /**
      * Обработка входящих команд
