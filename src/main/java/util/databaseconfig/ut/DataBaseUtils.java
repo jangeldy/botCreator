@@ -1,19 +1,19 @@
-package util.database.ut;
+package util.databaseconfig.ut;
 
-import util.database.DbConn;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
+import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.Date;
 
-public class DbUtils extends JdbcTemplate {
+public class DataBaseUtils extends JdbcTemplate {
 
-    public DbUtils() {
-        super(new DbConn().dataSource());
+    public DataBaseUtils(DataSource source) {
+        super(source);
     }
 
     public DataTable query(String sql) throws DataAccessException {

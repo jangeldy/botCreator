@@ -1,8 +1,11 @@
 package handling.impl;
 
+import database.dao.PositionDao;
 import handling.AbstractHandle;
 
 public class StartHandle extends AbstractHandle {
+
+    private PositionDao positionDao = daoFactory.getPositionDao();
 
 /*    @Step(value = "start", commandText = "/start")
     public void start() throws Exception {

@@ -1,17 +1,17 @@
-package util.database;
+package util.databaseconfig;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class DbConnProps {
+public class DataBaseProps {
 
     private static Properties properties = new Properties();
 
     public void initProperty() {
 
-        Logger log = LogManager.getLogger(this.getClass().getSimpleName());
+        Logger log = LogManager.getLogger(this.getClass());
 
         try {
 

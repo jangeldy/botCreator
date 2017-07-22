@@ -1,7 +1,7 @@
 package components.keyboard;
 
 import com.google.gson.Gson;
-import util.database.ut.DataRec;
+import util.databaseconfig.ut.DataRec;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 

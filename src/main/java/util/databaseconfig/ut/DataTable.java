@@ -1,4 +1,4 @@
-package util.database.ut;
+package util.databaseconfig.ut;
 
 import java.util.ArrayList;
 

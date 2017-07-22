@@ -1,5 +1,6 @@
 package handling;
 
+import database.DaoFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.telegram.telegrambots.api.objects.Message;
@@ -7,8 +8,7 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import util.AccessLevel;
 import util.GlobalParam;
-import util.database.ut.DataRec;
-import util.database.ut.DbUtils;
+import util.databaseconfig.ut.DataRec;
 import util.stepmapping.Mapping;
 import util.stepmapping.StepMapping;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public abstract class AbstractHandle {
 
     protected Logger log;
-    protected DbUtils dbUtils;
+    protected DaoFactory daoFactory;
     protected TelegramLongPollingBot bot;
     protected Update update;
 
@@ -47,9 +47,9 @@ public abstract class AbstractHandle {
             List<Integer> messageToClear
     ){
         this.log = LogManager.getLogger(this.getClass().getSimpleName());
-        this.dbUtils = new DbUtils();
         this.bot = bot;
         this.update = update;
+        this.daoFactory = new DaoFactory();
 
         this.inputText = globalParam.getInputText();
         this.redirectMapping = new Mapping();

@@ -1,6 +1,6 @@
 package util;
 
-import util.database.ut.DataRec;
+import util.databaseconfig.ut.DataRec;
 
 import java.util.HashMap;
 import java.util.Map;

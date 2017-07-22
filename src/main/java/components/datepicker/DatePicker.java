@@ -1,7 +1,7 @@
 package components.datepicker;
 
 import com.google.gson.Gson;
-import util.database.ut.DataRec;
+import util.databaseconfig.ut.DataRec;
 import org.joda.time.DateTime;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;

@@ -1,6 +1,6 @@
 import bgtasks.SchedulingConfig;
 import bgtasks.SchedulingTasks;
-import util.database.DbConnProps;
+import util.databaseconfig.DataBaseProps;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -39,7 +39,7 @@ public class Main {
     private static void initialize() throws Exception {
         StepMapping.initializeMapping();
         new AnnotationConfigApplicationContext(SchedulingConfig.class);
-        new DbConnProps().initProperty();
+        new DataBaseProps().initProperty();
         ApiContextInitializer.init();
     }
 }

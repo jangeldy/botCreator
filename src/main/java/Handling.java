@@ -10,9 +10,10 @@ import org.telegram.telegrambots.api.objects.Update;
 import util.AccessLevel;
 import util.GlobalParam;
 import util.StepParam;
-import util.database.ut.DataRec;
-import util.database.ut.DataTable;
-import util.database.ut.DbUtils;
+import util.databaseconfig.DataBaseConfig;
+import util.databaseconfig.ut.DataRec;
+import util.databaseconfig.ut.DataTable;
+import util.databaseconfig.ut.DataBaseUtils;
 import util.stepmapping.Mapping;
 import util.stepmapping.StepMapping;
 
@@ -32,7 +33,7 @@ class Handling {
     Handling() {
         handle = new DefaultHandle();
         messageToClear = new ArrayList<>();
-        this.log = LogManager.getLogger("Handling");
+        this.log = LogManager.getLogger(this.getClass());
     }
 
 
@@ -163,7 +164,7 @@ class Handling {
     private AccessLevel getAccessLevel(long chatId) {
 
         AccessLevel accessLevel = AccessLevel.READ;
-        DbUtils dbUtils = new DbUtils();
+        DataBaseUtils dbUtils = new DataBaseUtils(DataBaseConfig.dataSource());
         DataTable dataTable = dbUtils.query(
                 "SELECT a.enum_name FROM users u " +
                         "INNER JOIN access_level a ON u.id_access_level = a.id " +

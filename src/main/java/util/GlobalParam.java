@@ -1,6 +1,6 @@
 package util;
 
-import util.database.ut.DataRec;
+import util.databaseconfig.ut.DataRec;
 
 public class GlobalParam {
 
