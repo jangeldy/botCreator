@@ -4,7 +4,6 @@ public class PositionEntity {
 
     private int id;
     private String name;
-    private long chatId;
 
     public int getId() {
         return id;
