@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface CategoryDao {
 
-    List<CategoryEntity> getList();
+    List<CategoryEntity> getListByParent(int parent);
 
 }

@@ -17,9 +17,14 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public UserEntity get(int id) {
-        return utils.queryForObject("SELECT * FROM users WHERE id = ?",
-                new Object[] { id }, this::mapper);
+    public int insert(UserEntity user) {
+        return (int) utils.updateForKeyId(
+                "INSERT INTO users (chat_id, user_name, user_surname, " +
+                        "id_category, position, company_name) " +
+                        "VALUES (?,?,?,?,?,?)",
+                user.getChatId(), user.getUserName(), user.getUserSurname(),
+                user.getIdCatogory(), user.getPosition(), user.getCompanyName()
+        );
     }
 
 
@@ -35,13 +40,12 @@ public class UserDaoImpl implements UserDao {
         UserEntity u = new UserEntity();
         u.setId(rs.getInt("id"));
         u.setIdAccessLevel(rs.getInt("id_access_level"));
-        u.setIdPosition(rs.getInt("id_position"));
-        u.setIdConstructive(rs.getInt("id_constructive"));
+        u.setIdCatogory(rs.getInt("id_category"));
         u.setChatId(rs.getLong("chat_id"));
         u.setUserName(rs.getString("user_name"));
         u.setUserSurname(rs.getString("user_surname"));
-        u.setCompanyName(rs.getString("companyname"));
-
+        u.setPosition(rs.getString("position"));
+        u.setCompanyName(rs.getString("company_name"));
         return u;
     }
 }

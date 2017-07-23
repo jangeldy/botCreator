@@ -4,7 +4,7 @@ import database.entity.UserEntity;
 
 public interface UserDao {
 
-    UserEntity get(int id);
+    int insert(UserEntity userEntity);
 
     boolean checkUser(long chatId);
 }

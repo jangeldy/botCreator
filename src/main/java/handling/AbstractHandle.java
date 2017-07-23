@@ -74,7 +74,7 @@ public class AbstractHandle {
 
         if (step == null
                 || step.trim().equals("")
-                || StepMapping.containsStep(step)){
+                || !StepMapping.containsStep(step)){
             throw new RuntimeException("Error in redirect command. Step can not be empty");
         }
 
