@@ -18,6 +18,7 @@ import util.stepmapping.Mapping;
 import util.stepmapping.StepMapping;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -55,6 +56,8 @@ class Handling {
                 while (mapping.isRedirect()) {
                     mapping = runHandlingMethod(bot, update, globalParam, mapping);
                 }
+            } catch (InvocationTargetException ie){
+                ie.getCause().printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }

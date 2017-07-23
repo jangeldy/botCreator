@@ -14,10 +14,10 @@ import util.stepmapping.StepMapping;
 
 import java.util.List;
 
-public abstract class AbstractHandle {
+public class AbstractHandle {
 
-    protected Logger log;
-    protected DaoFactory daoFactory;
+    protected Logger log = LogManager.getLogger(this.getClass());
+    protected DaoFactory daoFactory = DaoFactory.getInstance();
     protected TelegramLongPollingBot bot;
     protected Update update;
 
@@ -46,17 +46,14 @@ public abstract class AbstractHandle {
             GlobalParam globalParam,
             List<Integer> messageToClear
     ){
-        this.log = LogManager.getLogger(this.getClass().getSimpleName());
         this.bot = bot;
         this.update = update;
-        this.daoFactory = new DaoFactory();
-
         this.inputText = globalParam.getInputText();
-        this.redirectMapping = new Mapping();
         this.queryData = globalParam.getQueryData();
         this.accessLevel = globalParam.getAccessLevel();
         this.messageId = globalParam.getMessageId();
         this.chatId = globalParam.getChatId();
+        this.redirectMapping = new Mapping();
         this.messageToClear = messageToClear;
     }
 
