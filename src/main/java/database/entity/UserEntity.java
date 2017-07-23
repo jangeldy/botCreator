@@ -1,14 +1,14 @@
 package database.entity;
 
-public class UsersEntity {
+public class UserEntity {
 
     private int id;
     private int idAccessLevel;
-    private int idPosition;
-    private int idConstructive;
+    private int idCatogory;
     private long chatId;
     private String userName;
     private String userSurname;
+    private String position;
     private String companyName;
 
     public int getId() {
@@ -27,20 +27,12 @@ public class UsersEntity {
         this.idAccessLevel = idAccessLevel;
     }
 
-    public int getIdPosition() {
-        return idPosition;
+    public int getIdCatogory() {
+        return idCatogory;
     }
 
-    public void setIdPosition(int idPosition) {
-        this.idPosition = idPosition;
-    }
-
-    public int getIdConstructive() {
-        return idConstructive;
-    }
-
-    public void setIdConstructive(int idConstructive) {
-        this.idConstructive = idConstructive;
+    public void setIdCatogory(int idCatogory) {
+        this.idCatogory = idCatogory;
     }
 
     public long getChatId() {
@@ -65,6 +57,14 @@ public class UsersEntity {
 
     public void setUserSurname(String userSurname) {
         this.userSurname = userSurname;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
     }
 
     public String getCompanyName() {

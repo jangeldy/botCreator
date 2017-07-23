@@ -1,9 +1,9 @@
 package handling.impl;
 
 import components.keyboard.IKeyboard;
-import database.dao.PositionDao;
-import database.dao.UsersDao;
-import database.entity.PositionEntity;
+import database.dao.CategoryDao;
+import database.dao.UserDao;
+import database.entity.CategoryEntity;
 import handling.AbstractHandle;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import util.Json;
@@ -12,8 +12,8 @@ import util.stepmapping.Step;
 
 public class StartHandle extends AbstractHandle {
 
-    private PositionDao positionDao = daoFactory.getPositionDao();
-    private UsersDao usersDao = daoFactory.getUsersDao();
+    private CategoryDao positionDao = daoFactory.getPositionDao();
+    private UserDao usersDao = daoFactory.getUsersDao();
 
 
     @Step(value = "S_start", commandText = "/start")
@@ -24,7 +24,7 @@ public class StartHandle extends AbstractHandle {
             IKeyboard kb = new IKeyboard();
             kb.next();
 
-            for (PositionEntity p : positionDao.getList()){
+            for (CategoryEntity p : positionDao.getList()){
                 kb.addButton(
                         p.getName(),
                         Json.set("pos_id", p.getId())

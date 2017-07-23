@@ -16,15 +16,11 @@ public class DaoFactory {
         return ourInstance;
     }
 
-    public PositionDao getPositionDao() {
-        return new PositionDaoImpl(source);
+    public CategoryDao getPositionDao() {
+        return new CategoryDaoImpl(source);
     }
 
-    public ConstructiveDao getConstructivDao() {
-        return new  ConstructiveDaoImpl(source);
-    }
-
-    public UsersDao getUsersDao() {
-        return new UsersDaoImpl(source);
+    public UserDao getUsersDao() {
+        return new UserDaoImpl(source);
     }
 }

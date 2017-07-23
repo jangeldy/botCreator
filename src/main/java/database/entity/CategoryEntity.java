@@ -1,8 +1,9 @@
 package database.entity;
 
-public class PositionEntity {
+public class CategoryEntity {
 
     private int id;
+    private int parent;
     private String name;
 
     public int getId() {
@@ -11,6 +12,14 @@ public class PositionEntity {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getParent() {
+        return parent;
+    }
+
+    public void setParent(int parent) {
+        this.parent = parent;
     }
 
     public String getName() {
