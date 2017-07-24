@@ -1,6 +1,5 @@
 package handling.impl;
 
-import components.keyboard.Keyboard;
 import handling.AbstractHandle;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;

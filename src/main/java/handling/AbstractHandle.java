@@ -7,6 +7,7 @@ import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import util.AccessLevel;
+import util.ClearMessage;
 import util.GlobalParam;
 import util.databaseconfig.ut.DataRec;
 import util.stepmapping.Mapping;
@@ -26,11 +27,9 @@ public class AbstractHandle {
     protected String inputText;
     protected DataRec queryData;
     protected AccessLevel accessLevel;
-    protected int messageId;
     protected long chatId;
 
     //
-    private List<Integer> messageToClear;
     private Mapping redirectMapping;
 
 
@@ -43,18 +42,15 @@ public class AbstractHandle {
     public void setGlobalParam(
             TelegramLongPollingBot bot,
             Update update,
-            GlobalParam globalParam,
-            List<Integer> messageToClear
+            GlobalParam globalParam
     ){
         this.bot = bot;
         this.update = update;
         this.inputText = globalParam.getInputText();
         this.queryData = globalParam.getQueryData();
         this.accessLevel = globalParam.getAccessLevel();
-        this.messageId = globalParam.getMessageId();
         this.chatId = globalParam.getChatId();
         this.redirectMapping = new Mapping();
-        this.messageToClear = messageToClear;
     }
 
     public String getChangedStep() {
@@ -86,18 +82,10 @@ public class AbstractHandle {
 
     /**
      * Для очистки сообщения
-     * @param msgId - идентфикатор
-     */
-    protected void setMessageToClear(int msgId){
-        messageToClear.add(msgId);
-    }
-
-    /**
-     * Для очистки сообщения
      * @param message - сообщение
      */
-    protected void setMessageToClear(Message message){
-        messageToClear.add(message.getMessageId());
+    protected void clearMessage(Message message){
+        ClearMessage.set(message.getChatId(), message.getMessageId());
     }
 
 }

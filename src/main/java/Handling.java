@@ -8,6 +8,7 @@ import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import util.AccessLevel;
+import util.ClearMessage;
 import util.GlobalParam;
 import util.StepParam;
 import util.databaseconfig.DataBaseConfig;
@@ -28,13 +29,10 @@ class Handling {
 
     private String step;
     private AbstractHandle handle;
-    private List<Integer> messageToClear;
-    private Logger log;
+    private Logger log = LogManager.getLogger(this.getClass());
 
     Handling() {
         handle = new DefaultHandle();
-        messageToClear = new ArrayList<>();
-        this.log = LogManager.getLogger(this.getClass());
     }
 
 
@@ -198,7 +196,7 @@ class Handling {
     ) throws Exception {
 
         // Очистка сообщений
-        for (int messageId : messageToClear) {
+        for (int messageId : ClearMessage.get(globalParam.getChatId())) {
             try {
                 DeleteMessage deleteMessage = new DeleteMessage();
                 deleteMessage.setChatId(String.valueOf(globalParam.getChatId()));
@@ -206,7 +204,6 @@ class Handling {
                 bot.deleteMessage(deleteMessage);
             } catch (Exception ignore) {}
         }
-        messageToClear.clear();
 
 
         // вывод маппинга в консоль
@@ -219,7 +216,7 @@ class Handling {
         if (className.equals(handle.getClass().getSimpleName())) {
 
             Class<?> clazz = handle.getClass();
-            handle.setGlobalParam(bot, update, globalParam, messageToClear);
+            handle.setGlobalParam(bot, update, globalParam);
 
             Method method = clazz.getMethod(mapping.getHandleMethod());
             method.invoke(handle);
@@ -236,7 +233,7 @@ class Handling {
             Constructor<?> ctor = clazz.getConstructor();
 
             handle = (AbstractHandle) ctor.newInstance();
-            handle.setGlobalParam(bot, update, globalParam, messageToClear);
+            handle.setGlobalParam(bot, update, globalParam);
 
             Method method = clazz.getMethod(mapping.getHandleMethod());
             method.invoke(handle);
@@ -257,12 +254,15 @@ class Handling {
             redirect = "REDIRECT --> ";
         }
 
-        log.info("-----> " + redirect +
-                "ClassName : " + mapping.getHandleClassName() + ";  " +
-                "MethodName : " + mapping.getHandleMethod() + ";  " +
-                "Step : " + mapping.getStep() + ";  " +
-                "CommandText : " + mapping.getCommandText() + ";"
+        log.info(" ");
+        log.info(
+                "-----> " + redirect +
+                "CLASSNAME:" + mapping.getHandleClassName() + " ---> " +
+                "METHODNAME:" + mapping.getHandleMethod() + " ---> " +
+                "STEP:" + mapping.getStep() + " ---> " +
+                "COMMANDTEXT:" + mapping.getCommandText()
         );
+        log.info(" ");
     }
 
 }

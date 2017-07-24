@@ -25,7 +25,7 @@ public class StartHandle extends AbstractHandle {
 
         if (!usersDao.checkUser(chatId)){
 
-            setMessageToClear(
+            clearMessage(
                     bot.sendMessage(new SendMessage()
                             .setText("Введите ваше имя")
                             .setChatId(chatId)
@@ -44,7 +44,7 @@ public class StartHandle extends AbstractHandle {
     @Step("S_start2")
     public void start2() throws Exception {
 
-        setMessageToClear(
+        clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setText("Введите вашу фамилию")
                         .setChatId(chatId)
@@ -72,7 +72,7 @@ public class StartHandle extends AbstractHandle {
 
                 StepParam param = new StepParam(chatId, "S_registr");
                 param.set("category", category);
-                setMessageToClear(
+                clearMessage(
                         bot.sendMessage(new SendMessage()
                                 .setText("Введите наименование компаний")
                                 .setChatId(chatId)
@@ -109,7 +109,7 @@ public class StartHandle extends AbstractHandle {
             );
         }
 
-        setMessageToClear(
+        clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setText("Выберите к какой категорий относитесь")
                         .setChatId(chatId)
@@ -131,7 +131,7 @@ public class StartHandle extends AbstractHandle {
 
     @Step("S_start5")
     public void start5() throws Exception {
-        setMessageToClear(
+        clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setText("Введите вашу должность")
                         .setChatId(chatId)

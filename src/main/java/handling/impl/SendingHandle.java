@@ -1,18 +1,14 @@
 package handling.impl;
 
 import components.keyboard.IKeyboard;
-import components.keyboard.Keyboard;
 import database.dao.CategoryDao;
 import database.dao.UserDao;
 import database.entity.CategoryEntity;
 import database.entity.UserEntity;
 import handling.AbstractHandle;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
 import util.Json;
 import util.StepParam;
-import util.databaseconfig.ut.DataRec;
-import util.databaseconfig.ut.DataTable;
 import util.stepmapping.Step;
 
 import java.util.ArrayList;
@@ -118,10 +114,10 @@ public class SendingHandle extends AbstractHandle {
                 if (categoryCheckBox != null) {
 
                     for (Map.Entry<Integer, Boolean> entry : categoryCheckBox.entrySet()) {
-                        if (entry.getValue() == true) {
+                        if (entry.getValue()) {
                             for (UserEntity rec : userDao.getListByCategory(entry.getKey())) {
                                 UserEntity mydata = userDao.getByChatId(chatId);
-                                setMessageToClear(
+                                clearMessage(
                                         bot.sendMessage(new SendMessage()
                                                 .setChatId(rec.getChatId())
                                                 .setText("<b>\uD83D\uDD0A Расслка от " + mydata.getUserName() + " " +
@@ -138,10 +134,10 @@ public class SendingHandle extends AbstractHandle {
                 if (userCheckBox != null) {
 
                     for (Map.Entry<Long, Boolean> entry : userCheckBox.entrySet()) {
-                        if (entry.getValue() == true) {
+                        if (entry.getValue()) {
 
                             UserEntity user = userDao.getByChatId(entry.getKey());
-                            setMessageToClear(
+                            clearMessage(
                                     bot.sendMessage(new SendMessage()
                                             .setChatId(user.getChatId())
                                             .setText("<b>\uD83D\uDD0A Расслка от " + userDao.getByChatId(chatId).getUserName() + " " +
@@ -164,7 +160,7 @@ public class SendingHandle extends AbstractHandle {
 
 
                     for (Map.Entry<Integer, Boolean> entry : categoryCheckBox.entrySet()) {
-                        if (entry.getValue() == true) {
+                        if (entry.getValue()) {
 
                             for (UserEntity rec : userDao.getListByCategory(entry.getKey())) {
                                 IKeyboard kb = new IKeyboard();
@@ -180,7 +176,7 @@ public class SendingHandle extends AbstractHandle {
                                         .enableHtml(true)
                                 );
 
-                                setMessageToClear(
+                                clearMessage(
                                         bot.sendMessage(new SendMessage()
                                                 .setChatId(rec.getChatId())
                                                 .setText("⬇️")
@@ -189,13 +185,6 @@ public class SendingHandle extends AbstractHandle {
                                         )
                                 );
 
-                            }
-                            try {
-                                DeleteMessage message = new DeleteMessage();
-                                message.setMessageId(messageId);
-                                message.setChatId(String.valueOf(chatId));
-                                bot.deleteMessage(message);
-                            } catch (Exception ignore) {
                             }
                         }
 
@@ -206,7 +195,7 @@ public class SendingHandle extends AbstractHandle {
                 if (userCheckBox != null) {
 
                     for (Map.Entry<Long, Boolean> entry : userCheckBox.entrySet()) {
-                        if (entry.getValue() == true) {
+                        if (entry.getValue()) {
                             UserEntity mydata = userDao.getByChatId(chatId);
                             UserEntity user = userDao.getByChatId(entry.getKey());
                             IKeyboard kb = new IKeyboard();
@@ -215,7 +204,7 @@ public class SendingHandle extends AbstractHandle {
                             kb.addButton("Пропустить", Json.set("step", "").set("chatid", chatId));
 
 
-                            setMessageToClear(
+                            clearMessage(
                                     bot.sendMessage(new SendMessage()
                                             .setChatId(user.getChatId())
                                             .setText("<b>✉️ Сообщения от " + mydata.getUserName() + " " +
@@ -229,13 +218,6 @@ public class SendingHandle extends AbstractHandle {
                         }
 
                     }
-                    try {
-                        DeleteMessage message20 = new DeleteMessage();
-                        message20.setMessageId(messageId);
-                        message20.setChatId(String.valueOf(chatId));
-                        bot.deleteMessage(message20);
-                    } catch (Exception ignore) {
-                    }
                 }
 
             }
@@ -247,14 +229,14 @@ public class SendingHandle extends AbstractHandle {
                 if (categoryCheckBox != null) {
 
                     for (Map.Entry<Integer, Boolean> entry : categoryCheckBox.entrySet()) {
-                        if (entry.getValue() == true) {
+                        if (entry.getValue()) {
                             for (UserEntity rec : userDao.getListByCategory(entry.getKey())) {
                                 IKeyboard kb = new IKeyboard();
                                 kb.next(2);
                                 kb.addButton("✅", Json.set("step", "S_answerEmployee").set("chatid", chatId));
                                 kb.addButton("❎", Json.set("step", "").set("chatid", chatId));
                                 UserEntity mydata = userDao.getByChatId(chatId);
-                                setMessageToClear(
+                                clearMessage(
                                         bot.sendMessage(new SendMessage()
                                                 .setChatId(rec.getChatId())
                                                 .setText("<b>\uD83D\uDCE3 Опрос от " + mydata.getUserName() + " " +
@@ -274,13 +256,13 @@ public class SendingHandle extends AbstractHandle {
                     IKeyboard kb = new IKeyboard();
 
                     for (Map.Entry<Long, Boolean> entry : userCheckBox.entrySet()) {
-                        if (entry.getValue() == true) {
+                        if (entry.getValue()) {
 
                             UserEntity user = userDao.getByChatId(entry.getKey());
                             kb.next(2);
                             kb.addButton("Да", Json.set("step", "S_Interv").set("chatid", chatId));
                             kb.addButton("Нет", Json.set("step", "").set("chatid", chatId));
-                            setMessageToClear(
+                            clearMessage(
                                     bot.sendMessage(new SendMessage()
                                             .setChatId(user.getChatId())
                                             .setText("<b>\uD83D\uDCE3 Опрос от " + userDao.getByChatId(chatId).getUserName() + " " +
@@ -331,7 +313,7 @@ public class SendingHandle extends AbstractHandle {
                 );
             }
 
-            setMessageToClear(
+            clearMessage(
                     bot.sendMessage(new SendMessage()
                             .setChatId(chatId)
                             .setText("Выберите получателей и введите текст рассылки")
@@ -394,7 +376,7 @@ public class SendingHandle extends AbstractHandle {
             categoryCheckBox.put(category.getId(), true);
         }
 
-        setMessageToClear(
+        clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setChatId(chatId)
                         .setText("Выберите получателей и введите текст рассылки")
@@ -423,7 +405,7 @@ public class SendingHandle extends AbstractHandle {
             userCheckBox.put(user.getChatId(), false);
         }
 
-        setMessageToClear(
+        clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setChatId(chatId)
                         .setText("Выберите получателей и введите текст рассылки")
@@ -436,19 +418,12 @@ public class SendingHandle extends AbstractHandle {
     @Step("S_answerEmployee")
     public void AnswerEmployee() throws Exception {
         chatidForAnswer = queryData.getLong("chatid");
-        setMessageToClear(
+        clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setChatId(chatId)
                         .setText("Введите текст для ответа")
                 )
         );
-        try {
-            DeleteMessage message10 = new DeleteMessage();
-            message10.setMessageId(messageId);
-            message10.setChatId(String.valueOf(chatId));
-            bot.deleteMessage(message10);
-        } catch (Exception ignore) {
-        }
         step = "S_answerEmployee2";
 
     }
@@ -470,7 +445,7 @@ public class SendingHandle extends AbstractHandle {
                 .enableHtml(true)
         );
 
-        setMessageToClear(
+        clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setChatId(chatidForAnswer)
                         .setText("Выберите действие")
@@ -478,15 +453,6 @@ public class SendingHandle extends AbstractHandle {
                         .enableHtml(true)
                 )
         );
-
-        try {
-            DeleteMessage message2 = new DeleteMessage();
-            message2.setMessageId(messageId);
-            message2.setChatId(String.valueOf(chatId));
-            bot.deleteMessage(message2);
-        } catch (Exception ignore) {
-        }
-
 
     }
 
@@ -501,7 +467,7 @@ public class SendingHandle extends AbstractHandle {
             kb.addButton(constructive.getName(), Json.set("step", "S_constr_part").set("constructive", constructive.getParent()));
 
         }
-        setMessageToClear(
+        clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setChatId(chatId)
                         .setText("Выберите конструктив")
@@ -526,7 +492,7 @@ public class SendingHandle extends AbstractHandle {
             kb.addButton(constructive.getCompanyName(), Json.set("step", "S_constr_part").set("chatid", constructive.getChatId()));
 
         }
-        setMessageToClear(
+        clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setChatId(chatId)
                         .setText("Выберите конструктив")
@@ -548,7 +514,7 @@ public class SendingHandle extends AbstractHandle {
             kb.addButton(constructive.getCompanyName(), Json.set("step", "S_send_part").set("constructive", constructive.getChatId()));
 
         }
-        setMessageToClear(
+        clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setChatId(chatId)
                         .setText("Партнеры")
@@ -562,7 +528,7 @@ public class SendingHandle extends AbstractHandle {
     @Step("S_send_part")
     public void S_send_part() throws Exception {
         chatidForPartners = queryData.getLong("constructive");
-        setMessageToClear(
+        clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setChatId(chatId)
                         .setText("Введите текст сообщения")
@@ -590,7 +556,7 @@ public class SendingHandle extends AbstractHandle {
                 .enableHtml(true)
         );
 
-        setMessageToClear(
+        clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setChatId(chatidForPartners)
                         .setText("Выберите действие")
@@ -598,15 +564,6 @@ public class SendingHandle extends AbstractHandle {
                         .enableHtml(true)
                 )
         );
-
-        try {
-            DeleteMessage message2 = new DeleteMessage();
-            message2.setMessageId(messageId);
-            message2.setChatId(String.valueOf(chatId));
-            bot.deleteMessage(message2);
-        } catch (Exception ignore) {
-        }
-
 
     }
 
@@ -643,7 +600,7 @@ public class SendingHandle extends AbstractHandle {
                 );
             }
 
-            setMessageToClear(
+            clearMessage(
                     bot.sendMessage(new SendMessage()
                             .setChatId(chatId)
                             .setText("Выберите получателей и введите текст рассылки")
