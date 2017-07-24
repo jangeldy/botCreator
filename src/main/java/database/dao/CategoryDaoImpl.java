@@ -17,6 +17,14 @@ public class CategoryDaoImpl implements CategoryDao {
     }
 
     @Override
+    public CategoryEntity get(int id) {
+        return utils.queryForObject(
+                "SELECT * FROM category where id = ?",
+                new Object[] { id }, this::mapper
+        );
+    }
+
+    @Override
     public List<CategoryEntity> getListByParent(int parent){
 
         String parentStr = " = " + String.valueOf(parent);
@@ -25,6 +33,18 @@ public class CategoryDaoImpl implements CategoryDao {
         return utils.query(
                 "SELECT * FROM category WHERE parent "
                         + parentStr + " AND id NOT IN (4,5)",
+                this::mapper);
+    }
+
+    @Override
+    public List<CategoryEntity> getListForSending(int parent){
+
+        String parentStr = " = " + String.valueOf(parent);
+        if (parent < 1) parentStr = " is null ";
+
+        return utils.query(
+                "SELECT * FROM category WHERE parent "
+                        + parentStr,
                 this::mapper);
     }
 
