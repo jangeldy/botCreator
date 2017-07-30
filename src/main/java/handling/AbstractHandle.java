@@ -9,6 +9,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import util.AccessLevel;
 import util.ClearMessage;
 import util.GlobalParam;
+import util.StepParam;
 import util.databaseconfig.ut.DataRec;
 import util.stepmapping.Mapping;
 import util.stepmapping.StepMapping;
@@ -27,6 +28,7 @@ public class AbstractHandle {
     protected String inputText;
     protected DataRec queryData;
     protected AccessLevel accessLevel;
+    protected StepParam param;
     protected long chatId;
 
     //
@@ -53,6 +55,7 @@ public class AbstractHandle {
         this.chatId = globalParam.getChatId();
         this.redirectMapping = new Mapping();
         this.step = step;
+        this.param = new StepParam(chatId, step);
     }
 
     public String getChangedStep() {
