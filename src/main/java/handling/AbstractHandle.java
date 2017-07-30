@@ -42,7 +42,8 @@ public class AbstractHandle {
     public void setGlobalParam(
             TelegramLongPollingBot bot,
             Update update,
-            GlobalParam globalParam
+            GlobalParam globalParam,
+            String step
     ){
         this.bot = bot;
         this.update = update;
@@ -51,6 +52,7 @@ public class AbstractHandle {
         this.accessLevel = globalParam.getAccessLevel();
         this.chatId = globalParam.getChatId();
         this.redirectMapping = new Mapping();
+        this.step = step;
     }
 
     public String getChangedStep() {

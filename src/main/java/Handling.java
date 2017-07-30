@@ -216,7 +216,7 @@ class Handling {
         if (className.equals(handle.getClass().getSimpleName())) {
 
             Class<?> clazz = handle.getClass();
-            handle.setGlobalParam(bot, update, globalParam);
+            handle.setGlobalParam(bot, update, globalParam, mapping.getStep());
 
             Method method = clazz.getMethod(mapping.getHandleMethod());
             method.invoke(handle);
@@ -233,7 +233,7 @@ class Handling {
             Constructor<?> ctor = clazz.getConstructor();
 
             handle = (AbstractHandle) ctor.newInstance();
-            handle.setGlobalParam(bot, update, globalParam);
+            handle.setGlobalParam(bot, update, globalParam, mapping.getStep());
 
             Method method = clazz.getMethod(mapping.getHandleMethod());
             method.invoke(handle);
