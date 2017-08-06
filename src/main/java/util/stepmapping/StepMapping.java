@@ -25,66 +25,50 @@ public class StepMapping {
 
                 if (method.isAnnotationPresent(Step.class)) {
                     Step step = method.getAnnotation(Step.class);
+                    String stepName = method.getName();
 
-                    if (step.value().equals("")){
-                        throw new Exception("There is no step for the class " + clazz.getSimpleName());
-                    }
-
-                    checkStepName(clazz.getSimpleName(), step.value());
-
-                    if (!stepMappingMap.containsKey(step.value())){
+                    if (!stepMappingMap.containsKey(stepName)){
 
                         Mapping mapping = new Mapping();
                         mapping.setHandleClassName(clazz.getSimpleName());
                         mapping.setHandleMethod(method.getName());
-                        mapping.setStep(step.value());
-                        mapping.setCommandText(step.commandText());
-                        stepMappingMap.put(step.value(), mapping);
+                        mapping.setStep(stepName);
+                        mapping.setCommandText(step.value());
+                        stepMappingMap.put(stepName, mapping);
 
                     }
                     else {
                         throw new Exception(
-                                "Error when reading a step in class "
+                                "Error when reading a step \"" + stepName + "\" in class "
                                 + clazz.getSimpleName()
                                 + "; Step already exists in class "
-                                + stepMappingMap.get(step.value()).getHandleClassName()
+                                + stepMappingMap.get(stepName).getHandleClassName()
                         );
                     }
 
-                    if (!step.commandText().equals("")){
-                        if (!commandMappingMap.containsKey(step.commandText())){
+                    if (!step.value().equals("")){
+                        if (!commandMappingMap.containsKey(step.value())){
 
                             Mapping mapping = new Mapping();
                             mapping.setHandleClassName(clazz.getSimpleName());
                             mapping.setHandleMethod(method.getName());
-                            mapping.setStep(step.value());
-                            mapping.setCommandText(step.commandText());
-                            commandMappingMap.put(step.commandText(), mapping);
+                            mapping.setStep(stepName);
+                            mapping.setCommandText(step.value());
+                            commandMappingMap.put(step.value(), mapping);
 
                         }
                         else {
                             throw new Exception(
-                                    "Error when reading a commandText in class "
+                                    "Error when reading a commandText \"" + step.value() + "\" in class "
                                             + clazz.getSimpleName()
                                             + "; CommandText already exists in class "
-                                            + commandMappingMap.get(step.commandText()).getHandleClassName()
+                                            + commandMappingMap.get(step.value()).getHandleClassName()
                             );
                         }
                     }
 
                 }
             }
-        }
-    }
-
-    private static void checkStepName(String className, String stepName) throws Exception {
-
-        char[] stepNameChar = stepName.toCharArray();
-        char[] classNameChar = className.toCharArray();
-
-        if (stepNameChar[0] != classNameChar[0]){
-            throw new Exception("The step name is set incorrectly in class " + className + "; \n" +
-                    "The step name must begin with the first letter of the class name");
         }
     }
 

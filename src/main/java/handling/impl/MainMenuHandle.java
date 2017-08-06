@@ -8,8 +8,8 @@ import util.stepmapping.Step;
 public class MainMenuHandle extends AbstractHandle {
 
 
-    @Step(value = "M_main_menu", commandText = "Назад")
-    public void mainMenu() throws Exception {
+    @Step("Назад")
+    public void M_main_menu() throws Exception {
 
         Keyboard kb = new Keyboard();
         kb.next(2,2,2,1);

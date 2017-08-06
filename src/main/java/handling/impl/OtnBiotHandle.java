@@ -14,13 +14,13 @@ public class OtnBiotHandle extends AbstractHandle{
     private CategoryDao categoryDao = daoFactory.getCategoryDao();
     private UserDao userDao = daoFactory.getUserDao();
 
-    @Step(value = "O_OtnBiot", commandText = "ОТН БиОТ")
-    public void OtnBiot() throws Exception {
+    @Step("ОТН БиОТ")
+    public void O_OtnBiot() throws Exception {
 
         IKeyboard kb = new IKeyboard();
         kb.next(1,1);
-        kb.addButton("БиОТ", Json.set("step","Biot"));
-        kb.addButton("ОТН", Json.set("step","Otn"));
+        kb.add("БиОТ", Json.set("step","Biot"));
+        kb.add("ОТН", Json.set("step","Otn"));
 
         bot.sendMessage(new SendMessage()
                 .setText("Меню ИНФО")

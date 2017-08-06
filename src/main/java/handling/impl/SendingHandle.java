@@ -28,8 +28,8 @@ public class SendingHandle extends AbstractHandle {
     private long UserchatidForAnswer;
     private long chatidForPartners;
 
-    @Step(value = "S_sending", commandText = "✉ Рассылка")
-    public void sending() throws Exception {
+    @Step("✉ Рассылка")
+    public void S_sending() throws Exception {
 
         StepParam param = new StepParam(chatId, "S_sendMsg");
         param.set("operation", "Рассылка");
@@ -41,8 +41,8 @@ public class SendingHandle extends AbstractHandle {
     }
 
 
-    @Step(value = "S_sendingCommand", commandText = "\uD83D\uDCC2 Команды")
-    public void sendingCommand() throws Exception {
+    @Step("\uD83D\uDCC2 Команды")
+    public void S_sendingCommand() throws Exception {
 
         StepParam param = new StepParam(chatId, "S_sendMsg");
         param.set("operation", "Команды");
@@ -60,8 +60,8 @@ public class SendingHandle extends AbstractHandle {
     }
 
 
-    @Step(value = "S_sendingInter", commandText = "Опрос")
-    public void sendingInterview() throws Exception {
+    @Step("Опрос")
+    public void S_sendingInter() throws Exception {
 
         StepParam param = new StepParam(chatId, "S_sendMsg");
         param.set("operation", "Опрос");
@@ -73,8 +73,8 @@ public class SendingHandle extends AbstractHandle {
     }
 
 
-    @Step("S_sendMsg")
-    public void sendMsg() throws Exception {
+    @Step
+    public void S_sendMsg() throws Exception {
         StepParam param = new StepParam(chatId, "S_sendMsg");
         String operation = param.getString("operation");
         if (param.containsKey("messageText")) {
@@ -284,8 +284,8 @@ public class SendingHandle extends AbstractHandle {
     }
 
 
-    @Step("S_checkBox")
-    public void checkBox() throws Exception {
+    @Step
+    public void S_checkBox() throws Exception {
 
         if (queryData.containsKey("category")) {
 
@@ -332,8 +332,8 @@ public class SendingHandle extends AbstractHandle {
     }
 
 
-    @Step("S_clickCt")
-    public void clickCt() throws Exception {
+    @Step
+    public void S_clickCt() throws Exception {
         categoryCheckBox = new HashMap<>();
         int categoryId = queryData.getInt("category");
 
@@ -415,8 +415,8 @@ public class SendingHandle extends AbstractHandle {
     }
 
 
-    @Step("S_answerEmployee")
-    public void AnswerEmployee() throws Exception {
+    @Step
+    public void S_answerEmployee() throws Exception {
         chatidForAnswer = queryData.getLong("chatid");
         clearMessage(
                 bot.sendMessage(new SendMessage()
@@ -428,8 +428,8 @@ public class SendingHandle extends AbstractHandle {
 
     }
 
-    @Step("S_answerEmployee2")
-    public void AnswerEmployee2() throws Exception {
+    @Step
+    public void S_answerEmployee2() throws Exception {
 
         UserEntity mydata = userDao.getByChatId(chatId);
         UserEntity user = userDao.getByChatId(chatidForAnswer);
@@ -457,7 +457,7 @@ public class SendingHandle extends AbstractHandle {
     }
 
 
-    @Step(value = "S_constructive", commandText = "⚒ Конструктив")
+    @Step("⚒ Конструктив")
     public void S_constructive() throws Exception {
 
         List<CategoryEntity> list = categoryDao.getListByParent(6);
@@ -480,7 +480,7 @@ public class SendingHandle extends AbstractHandle {
     }
 
 
-    @Step("S_constr_part")
+    @Step
     public void S_constr_part() throws Exception {
 
         int category = queryData.getInt("constructive");
@@ -504,7 +504,7 @@ public class SendingHandle extends AbstractHandle {
     }
 
 
-    @Step(value = "S_partners", commandText = "Партнеры")
+    @Step("Партнеры")
     public void S_partners() throws Exception {
 
         List<UserEntity> list = userDao.getListByCategoryRecusiv(6);
@@ -525,7 +525,7 @@ public class SendingHandle extends AbstractHandle {
     }
 
 
-    @Step("S_send_part")
+    @Step
     public void S_send_part() throws Exception {
         chatidForPartners = queryData.getLong("constructive");
         clearMessage(
@@ -540,7 +540,7 @@ public class SendingHandle extends AbstractHandle {
     }
 
 
-    @Step("S_send_part2")
+    @Step
     public void S_send_part2() throws Exception {
         UserEntity mydata = userDao.getByChatId(chatId);
         UserEntity user = userDao.getByChatId(chatidForPartners);
@@ -570,8 +570,8 @@ public class SendingHandle extends AbstractHandle {
 
 
 
-    @Step("S_checkBoxUser")
-    public void checkBoxUser() throws Exception {
+    @Step
+    public void S_checkBoxUser() throws Exception {
 
 
         if (queryData.containsKey("userChatId")) {

@@ -20,8 +20,8 @@ public class StartHandle extends AbstractHandle {
     private UserDao usersDao = daoFactory.getUserDao();
 
 
-    @Step(value = "S_start", commandText = "/start")
-    public void start() throws Exception {
+    @Step("/start")
+    public void S_start() throws Exception {
 
         if (!usersDao.checkUser(chatId)){
 
@@ -41,8 +41,8 @@ public class StartHandle extends AbstractHandle {
     }
 
 
-    @Step("S_start2")
-    public void start2() throws Exception {
+    @Step
+    public void S_start2() throws Exception {
 
         clearMessage(
                 bot.sendMessage(new SendMessage()
@@ -58,8 +58,8 @@ public class StartHandle extends AbstractHandle {
     }
 
 
-    @Step("S_start3")
-    public void start3() throws Exception {
+    @Step
+    public void S_start3() throws Exception {
 
         int category = 0;
         if (queryData.containsKey("category")){
@@ -120,8 +120,8 @@ public class StartHandle extends AbstractHandle {
     }
 
 
-    @Step("S_start4")
-    public void start4() throws Exception {
+    @Step
+    public void S_start4() throws Exception {
 
         StepParam param = new StepParam(chatId, "S_registr");
         param.set("companyName", inputText);
@@ -129,8 +129,8 @@ public class StartHandle extends AbstractHandle {
     }
 
 
-    @Step("S_start5")
-    public void start5() throws Exception {
+    @Step
+    public void S_start5() throws Exception {
         clearMessage(
                 bot.sendMessage(new SendMessage()
                         .setText("Введите вашу должность")
@@ -141,8 +141,8 @@ public class StartHandle extends AbstractHandle {
     }
 
 
-    @Step("S_registr")
-    public void registr() throws Exception {
+    @Step
+    public void S_registr() throws Exception {
         StepParam param = new StepParam(chatId, "S_registr");
 
         String name = param.getString("newUserName");
