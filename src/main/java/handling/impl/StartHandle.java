@@ -51,8 +51,7 @@ public class StartHandle extends AbstractHandle {
                 )
         );
 
-        StepParam param = new StepParam(chatId, "S_registr");
-        param.set("newUserName", inputText);
+        setParam("S_registr").set("newUserName", inputText);
         step = "S_start3";
 
     }
@@ -70,8 +69,7 @@ public class StartHandle extends AbstractHandle {
             if (queryData.get("parent") != null
                     && queryData.getInt("parent") == 6){
 
-                StepParam param = new StepParam(chatId, "S_registr");
-                param.set("category", category);
+                setParam("S_registr").set("category", category);
                 clearMessage(
                         bot.sendMessage(new SendMessage()
                                 .setText("Введите наименование компаний")
@@ -83,16 +81,14 @@ public class StartHandle extends AbstractHandle {
 
             } else if (category != 6){
 
-                StepParam param = new StepParam(chatId, "S_registr");
-                param.set("category", category);
+                setParam("S_registr").set("category", category);
                 redirect("S_start5");
                 return;
             }
 
         } else {
 
-            StepParam param = new StepParam(chatId, "S_registr");
-            param.set("newUserSurname", inputText);
+            setParam("S_registr").set("newUserSurname", inputText);
 
         }
 
@@ -123,8 +119,7 @@ public class StartHandle extends AbstractHandle {
     @Step
     public void S_start4() throws Exception {
 
-        StepParam param = new StepParam(chatId, "S_registr");
-        param.set("companyName", inputText);
+        setParam("S_registr").set("companyName", inputText);
         redirect("S_start5");
     }
 
@@ -143,7 +138,6 @@ public class StartHandle extends AbstractHandle {
 
     @Step
     public void S_registr() throws Exception {
-        StepParam param = new StepParam(chatId, "S_registr");
 
         String name = param.getString("newUserName");
         String surname = param.getString("newUserSurname");

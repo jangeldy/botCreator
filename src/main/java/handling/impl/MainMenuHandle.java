@@ -13,13 +13,13 @@ public class MainMenuHandle extends AbstractHandle {
 
         Keyboard kb = new Keyboard();
         kb.next(2,2,2,1);
-        kb.addButton("✉ Рассылка");
-        kb.addButton("⚒ Конструктив");
-        kb.addButton("\uD83D\uDCC2 Команды");
-        kb.addButton("Партнеры");
-        kb.addButton("ОТН БиОТ");
-        kb.addButton("Опрос");
-        kb.addButton("\uD83D\uDCCD Информация");
+        kb.add("✉ Рассылка");
+        kb.add("⚒ Конструктив");
+        kb.add("\uD83D\uDCC2 Команды");
+        kb.add("Партнеры");
+        kb.add("ОТН БиОТ");
+        kb.add("Опрос");
+        kb.add("\uD83D\uDCCD Информация");
 
         bot.sendMessage(new SendMessage()
                 .setText(".")

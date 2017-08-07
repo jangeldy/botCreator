@@ -26,6 +26,29 @@ public class Keyboard {
     }
 
 
+    public KeyboardButton addButton(String text) {
+        return setButton(text);
+    }
+
+
+    public KeyboardButton add(String text) {
+        return setButton(text);
+    }
+
+
+    public ReplyKeyboardMarkup generate() {
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        for (List<KeyboardRow> list:table){
+            keyboard.addAll(list);
+        }
+        keyboard.addAll(list);
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        keyboardMarkup.setKeyboard(keyboard);
+        keyboardMarkup.setResizeKeyboard(true);
+        return keyboardMarkup;
+    }
+
+
     private void setRows(){
         if (table == null) {
             table = new ArrayList<>();
@@ -43,21 +66,7 @@ public class Keyboard {
     }
 
 
-    public ReplyKeyboardMarkup generate() {
-        List<KeyboardRow> keyboard = new ArrayList<>();
-        for (List<KeyboardRow> list:table){
-            keyboard.addAll(list);
-        }
-        keyboard.addAll(list);
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-        keyboardMarkup.setKeyboard(keyboard);
-        keyboardMarkup.setResizeKeyboard(true);
-        return keyboardMarkup;
-    }
-
-
-    public KeyboardButton addButton(String text) {
-
+    private KeyboardButton setButton(String text) {
         if (table == null){
             throw new RuntimeException("The method 'next' was not called");
         }

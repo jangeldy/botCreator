@@ -28,7 +28,7 @@ public class AbstractHandle {
     protected String inputText;
     protected DataRec queryData;
     protected AccessLevel accessLevel;
-    protected StepParam param;
+    protected DataRec param;
     protected long chatId;
 
     //
@@ -55,7 +55,7 @@ public class AbstractHandle {
         this.chatId = globalParam.getChatId();
         this.redirectMapping = new Mapping();
         this.step = step;
-        this.param = new StepParam(chatId, step);
+        this.param = new StepParam(chatId, step).get();
     }
 
     public String getChangedStep() {
@@ -93,4 +93,12 @@ public class AbstractHandle {
         ClearMessage.set(message.getChatId(), message.getMessageId());
     }
 
+
+    protected DataRec setParam(long chatId, String step){
+        return new StepParam(chatId, step).get();
+    }
+
+    protected DataRec setParam(String step){
+        return new StepParam(chatId, step).get();
+    }
 }

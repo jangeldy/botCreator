@@ -26,40 +26,8 @@ public class StepParam {
         }
     }
 
-    public DataRec set(String key, Object value) {
-        return params.set(key, value);
-    }
-
-    public boolean containsKey(String key){
-        return params.containsKey(key);
-    }
-
-    public Object get(String key) {
-        return params.get(key);
-    }
-
-    public int getInt(String key) {
-        return params.getInt(key);
-    }
-
-    public long getLong(String key) {
-        return params.getLong(key);
-    }
-
-    public String getString(String key) {
-        return params.getString(key);
-    }
-
-    public Date getDate(String key) {
-        return params.getDate(key);
-    }
-
-    public Double getDouble(String key) {
-        return params.getDouble(key);
-    }
-
-    public boolean getBoolean(String key) {
-        return params.getBoolean(key);
+    public DataRec get() {
+        return params;
     }
 
     public void remove() {

@@ -14,14 +14,34 @@ public class IKeyboard {
     private List<List<InlineKeyboardButton>> inlineList;
     private List<List<List<InlineKeyboardButton>>> inlineTables;
 
+
     public void next(int ...buttonCounts){
         this.buttonCounts = buttonCounts;
         setRows();
     }
 
+
     public void next(){
         this.buttonCounts = null;
         setRows();
+    }
+
+
+    public InlineKeyboardMarkup generate() {
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        for (List<List<InlineKeyboardButton>> list:inlineTables){
+            keyboard.addAll(list);
+        }
+        keyboard.addAll(inlineList);
+        return new InlineKeyboardMarkup().setKeyboard(keyboard);
+    }
+
+    public InlineKeyboardButton addButton(String text, DataRec json) {
+        return setButton(text, json);
+    }
+
+    public InlineKeyboardButton add(String text, DataRec json) {
+        return setButton(text, json);
     }
 
     private void setRows(){
@@ -40,17 +60,8 @@ public class IKeyboard {
         }
     }
 
-    public InlineKeyboardMarkup generate() {
-        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-        for (List<List<InlineKeyboardButton>> list:inlineTables){
-            keyboard.addAll(list);
-        }
-        keyboard.addAll(inlineList);
-        return new InlineKeyboardMarkup().setKeyboard(keyboard);
-    }
 
-
-    public InlineKeyboardButton addButton(String text, DataRec json) {
+    private InlineKeyboardButton setButton(String text, DataRec json) {
 
         if (inlineTables == null){
             throw new RuntimeException("The method 'next' was not called");
