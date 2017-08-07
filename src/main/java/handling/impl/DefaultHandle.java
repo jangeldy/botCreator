@@ -7,7 +7,7 @@ import util.stepmapping.Step;
 public class DefaultHandle extends AbstractHandle {
 
     @Step()
-    private void getTaskList(){
+    public void defaultStep() throws Exception {
 
     }
 }

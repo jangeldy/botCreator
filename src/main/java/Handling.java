@@ -44,10 +44,9 @@ class Handling {
     void start(Bot bot, Update update, Message message) {
 
         GlobalParam globalParam = getGlobalParam(update, message.getChatId());
-        Mapping mapping = getMapping(update, globalParam.getQueryData());
+        Mapping mapping = getMapping(update, message, globalParam.getQueryData());
 
-        if (message.isUserMessage() &&
-                globalParam.getAccessLevel() != AccessLevel.WITHOUT_ACCESS) {
+        if (globalParam.getAccessLevel() != AccessLevel.WITHOUT_ACCESS) {
 
             try {
                 mapping = runHandlingMethod(bot, update, globalParam, mapping);
@@ -98,7 +97,7 @@ class Handling {
      * @param queryData - скрытые данные инлайн кнопки
      * @return - Mapping
      */
-    private Mapping getMapping(Update update, DataRec queryData) {
+    private Mapping getMapping(Update update, Message message, DataRec queryData) {
 
         Mapping mapping = null;
         if (update.getMessage() == null) {
@@ -120,8 +119,16 @@ class Handling {
             }
         }
 
-        if (mapping == null) {
+        if (mapping == null && StepMapping.containsStep(step)) {
             mapping = StepMapping.getMappingByStep(step);
+        } else {
+            mapping = StepMapping.getMappingByStep("defaultStep");
+        }
+
+        if (message.isGroupMessage()
+                || message.isSuperGroupMessage()
+                || message.isChannelMessage()){
+            mapping = StepMapping.getMappingByStep("groupMessage");
         }
 
         return mapping;
