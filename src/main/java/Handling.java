@@ -53,8 +53,6 @@ class Handling {
                 while (mapping.isRedirect()) {
                     mapping = runHandlingMethod(bot, update, globalParam, mapping);
                 }
-            } catch (InvocationTargetException ie){
-                ie.getCause().printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -121,7 +119,7 @@ class Handling {
 
         if (mapping == null && StepMapping.containsStep(step)) {
             mapping = StepMapping.getMappingByStep(step);
-        } else {
+        } else if (mapping == null) {
             mapping = StepMapping.getMappingByStep("defaultStep");
         }
 
@@ -232,11 +230,7 @@ class Handling {
                 new StepParam(globalParam.getChatId(), lastStep).remove();
             }
 
-            try {
-                Method method = clazz.getMethod(mapping.getHandleMethod());
-                method.invoke(handle);
-            } catch (DataRequestException ignore){}
-
+            invokeMethod(clazz, mapping);
 
             if (!handle.getChangedStep().equals(step)){
                 new StepParam(globalParam.getChatId(), mapping.getStep() + "_dr").remove();
@@ -260,10 +254,7 @@ class Handling {
                 new StepParam(globalParam.getChatId(), lastStep).remove();
             }
 
-            try {
-                Method method = clazz.getMethod(mapping.getHandleMethod());
-                method.invoke(handle);
-            } catch (DataRequestException ignore){}
+            invokeMethod(clazz, mapping);
 
             if (!handle.getChangedStep().equals(step)){
                 new StepParam(globalParam.getChatId(), mapping.getStep() + "_dr").remove();
@@ -273,6 +264,21 @@ class Handling {
             lastStep = handle.getChangedStep();
             step = handle.getChangedStep();
             return handle.getRedirect();
+        }
+    }
+
+
+    private void invokeMethod(Class clazz, Mapping mapping) throws Exception {
+        try {
+            Method method = clazz.getMethod(mapping.getHandleMethod());
+            method.invoke(handle);
+        } catch (InvocationTargetException e){
+            if (!e.getTargetException()
+                    .getClass()
+                    .getSimpleName()
+                    .equals("DataRequestException")){
+                e.getCause().printStackTrace();
+            }
         }
     }
 
