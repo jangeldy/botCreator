@@ -8,7 +8,7 @@ CREATE TABLE access_level
 CREATE UNIQUE INDEX access_level_enum_name_uindex ON access_level (enum_name);
 
 
-CREATE TABLE user
+CREATE TABLE users
 (
   id SERIAL PRIMARY KEY NOT NULL,
   chat_id BIGINT NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE user
   id_access_level INTEGER,
   CONSTRAINT user_access_level_id_fk FOREIGN KEY (id_access_level) REFERENCES access_level (id)
 );
-CREATE UNIQUE INDEX user_chat_id_uindex ON user (chat_id);
+CREATE UNIQUE INDEX user_chat_id_uindex ON users (chat_id);
 
 INSERT INTO access_level (id, name, enum_name) VALUES (1, 'Администратор', 'ADMIN');
 INSERT INTO access_level (id, name, enum_name) VALUES (2, 'Чтение и запись', 'READ_AND_WRITE');

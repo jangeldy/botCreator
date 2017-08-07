@@ -1,8 +1,10 @@
 package handling;
 
 import database.DaoFactory;
+import exceptions.DataRequestException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -94,11 +96,47 @@ public class AbstractHandle {
     }
 
 
+    /**
+     * Параметры для step
+     * @param chatId - для кого
+     * @param step - для какого step
+     * @return - DataRec
+     */
     protected DataRec setParam(long chatId, String step){
         return new StepParam(chatId, step).get();
     }
 
+    /**
+     * Параметры для step
+     * @param step - для какого step
+     * @return - DataRec
+     */
     protected DataRec setParam(String step){
         return new StepParam(chatId, step).get();
+    }
+
+
+    protected String dataRequest(String messageText) throws Exception {
+
+        DataRec param = new StepParam(chatId, step + "_dr").get();
+        if (param.containsKey(messageText)){
+
+            if (param.get(messageText).equals("requested")){
+                param.put(messageText, inputText);
+            }
+
+            return param.getString(messageText);
+
+        } else {
+
+            param.put(messageText, "requested");
+            clearMessage(bot.sendMessage(
+                    new SendMessage()
+                    .setChatId(chatId)
+                    .setText(messageText)
+            ));
+
+            throw new DataRequestException();
+        }
     }
 }

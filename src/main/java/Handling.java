@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import exceptions.DataRequestException;
 import handling.AbstractHandle;
 import handling.impl.DefaultHandle;
 import org.apache.log4j.LogManager;
@@ -22,12 +23,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 class Handling {
 
     private String step;
+    private String lastStep;
     private AbstractHandle handle;
     private Logger log = LogManager.getLogger(this.getClass());
 
@@ -44,7 +44,7 @@ class Handling {
     void start(Bot bot, Update update, Message message) {
 
         GlobalParam globalParam = getGlobalParam(update, message.getChatId());
-        Mapping mapping = getMapping(update, globalParam.getQueryData(), step);
+        Mapping mapping = getMapping(update, globalParam.getQueryData());
 
         if (message.isUserMessage() &&
                 globalParam.getAccessLevel() != AccessLevel.WITHOUT_ACCESS) {
@@ -98,7 +98,7 @@ class Handling {
      * @param queryData - скрытые данные инлайн кнопки
      * @return - Mapping
      */
-    private Mapping getMapping(Update update, DataRec queryData, String step) {
+    private Mapping getMapping(Update update, DataRec queryData) {
 
         Mapping mapping = null;
         if (update.getMessage() == null) {
@@ -107,6 +107,7 @@ class Handling {
                 String qd_step = queryData.getString("step");
                 if (StepMapping.containsStep(qd_step)) {
                     mapping = StepMapping.getMappingByStep(qd_step);
+                    step = mapping.getStep();
                 }
             }
 
@@ -115,6 +116,7 @@ class Handling {
             String commandText = update.getMessage().getText();
             if (StepMapping.containsCommandText(commandText)) {
                 mapping = StepMapping.getMappingByCommandText(commandText);
+                step = mapping.getStep();
             }
         }
 
@@ -218,12 +220,23 @@ class Handling {
             Class<?> clazz = handle.getClass();
             handle.setGlobalParam(bot, update, globalParam, mapping.getStep());
 
-            Method method = clazz.getMethod(mapping.getHandleMethod());
-            method.invoke(handle);
+            if (!step.equals(lastStep)){
+                new StepParam(globalParam.getChatId(), lastStep + "_dr").remove();
+                new StepParam(globalParam.getChatId(), lastStep).remove();
+            }
 
-            StepParam stepParam = new StepParam(globalParam.getChatId(), mapping.getStep());
-            stepParam.remove();
+            try {
+                Method method = clazz.getMethod(mapping.getHandleMethod());
+                method.invoke(handle);
+            } catch (DataRequestException ignore){}
 
+
+            if (!handle.getChangedStep().equals(step)){
+                new StepParam(globalParam.getChatId(), mapping.getStep() + "_dr").remove();
+                new StepParam(globalParam.getChatId(), mapping.getStep()).remove();
+            }
+
+            lastStep = handle.getChangedStep();
             step = handle.getChangedStep();
             return handle.getRedirect();
         }
@@ -235,12 +248,22 @@ class Handling {
             handle = (AbstractHandle) ctor.newInstance();
             handle.setGlobalParam(bot, update, globalParam, mapping.getStep());
 
-            Method method = clazz.getMethod(mapping.getHandleMethod());
-            method.invoke(handle);
+            if (!step.equals(lastStep)){
+                new StepParam(globalParam.getChatId(), lastStep + "_dr").remove();
+                new StepParam(globalParam.getChatId(), lastStep).remove();
+            }
 
-            StepParam stepParam = new StepParam(globalParam.getChatId(), mapping.getStep());
-            stepParam.remove();
+            try {
+                Method method = clazz.getMethod(mapping.getHandleMethod());
+                method.invoke(handle);
+            } catch (DataRequestException ignore){}
 
+            if (!handle.getChangedStep().equals(step)){
+                new StepParam(globalParam.getChatId(), mapping.getStep() + "_dr").remove();
+                new StepParam(globalParam.getChatId(), mapping.getStep()).remove();
+            }
+
+            lastStep = handle.getChangedStep();
             step = handle.getChangedStep();
             return handle.getRedirect();
         }

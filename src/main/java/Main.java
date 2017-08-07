@@ -38,8 +38,8 @@ public class Main {
 
     private static void initialize() throws Exception {
         StepMapping.initializeMapping();
-        new AnnotationConfigApplicationContext(SchedulingConfig.class);
         new DataBaseProps().initProperty();
+        new AnnotationConfigApplicationContext(SchedulingConfig.class);
         ApiContextInitializer.init();
     }
 }
