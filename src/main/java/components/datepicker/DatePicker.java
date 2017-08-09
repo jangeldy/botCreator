@@ -1,6 +1,14 @@
 package components.datepicker;
 
 import com.google.gson.Gson;
+import components.keyboard.IKeyboard;
+import exceptions.DataRequestException;
+import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.objects.Message;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
+import util.ClearMessage;
+import util.Json;
 import util.databaseconfig.ut.DataRec;
 import org.joda.time.DateTime;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -18,30 +26,27 @@ public class DatePicker {
     private DateTime date;
     private int startDay;
     private List<String> designate;
-    private String step = null;
 
     public DatePicker(DataRec queryData){
         this.designate = new ArrayList<>();
         calculateDates(queryData);
     }
 
-    public DatePicker(DataRec queryData, String step){
-        this.designate = new ArrayList<>();
-        this.step = step;
-        calculateDates(queryData);
-    }
+    public DateTime getDate(TelegramLongPollingBot bot, String messageText, long chatId) throws TelegramApiException {
 
-
-    public DateTime getDate() {
-        return selectedDate;
-    }
-
-    public String getDateStr() {
         if (selectedDate == null){
-            return null;
-        }else {
-            DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-            return df.format(selectedDate.toDate());
+
+            Message message = bot.sendMessage(
+                    new SendMessage()
+                            .setText(messageText)
+                            .setChatId(chatId)
+                            .setReplyMarkup(generate())
+            );
+            ClearMessage.set(message.getChatId(), message.getMessageId());
+            throw new DataRequestException();
+
+        } else {
+            return selectedDate;
         }
     }
 
@@ -54,10 +59,12 @@ public class DatePicker {
 
         if (queryData.containsKey("dp_sel")){
             selectedDate = new DateTime(queryData.getDate("dp_sel"));
+            queryData.remove("dp_sel");
         }
 
         if (queryData.containsKey("dp_dt")){
             date = new DateTime(queryData.getDate("dp_dt"));
+            queryData.remove("dp_dt");
         } else {
             date = new DateTime();
         }
@@ -71,6 +78,7 @@ public class DatePicker {
                 date = date.dayOfMonth().withMinimumValue().plusMonths(1);
                 startDay = 1;
             }
+            queryData.remove("dp_next");
 
         } else if (queryData.containsKey("dp_prev")){
 
@@ -81,6 +89,7 @@ public class DatePicker {
                 date = date.dayOfMonth().withMinimumValue();
                 startDay = 1;
             }
+            queryData.remove("dp_prev");
 
         } else {
 
@@ -97,100 +106,59 @@ public class DatePicker {
         designate.add(df.format(new Date()));
     }
 
-    public InlineKeyboardMarkup generate() {
+    private InlineKeyboardMarkup generate() {
 
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
         String dateStr = df.format(date.toDate());
-        DataRec rec = new DataRec();
-        rec.put("dp_dt", dateStr);
 
-        if (step != null){
-            rec.put("step", step);
-        }
+        IKeyboard keyboard = new IKeyboard();
+        setHeader(keyboard, dateStr);
+        setBody(keyboard, dateStr.substring(2));
+        return keyboard.generate();
+    }
+
+    private void setHeader(IKeyboard keyboard, String dateStr){
 
         String monthName = "";
         switch (date.getMonthOfYear()){
-            case 1: monthName = "Январь " + date.getYear(); break;
-            case 2: monthName = "Февраль " + date.getYear(); break;
-            case 3: monthName = "Март " + date.getYear(); break;
-            case 4: monthName = "Апрель " + date.getYear(); break;
-            case 5: monthName = "Май " + date.getYear(); break;
-            case 6: monthName = "Июнь " + date.getYear(); break;
-            case 7: monthName = "Июль " + date.getYear(); break;
-            case 8: monthName = "Август " + date.getYear(); break;
-            case 9: monthName = "Сентябрь " + date.getYear(); break;
-            case 10: monthName = "Октябрь " + date.getYear(); break;
-            case 11: monthName = "Ноябрь " + date.getYear(); break;
-            case 12: monthName = "Декабрь " + date.getYear(); break;
+            case 1: monthName = "Январь"; break;
+            case 2: monthName = "Февраль"; break;
+            case 3: monthName = "Март"; break;
+            case 4: monthName = "Апрель"; break;
+            case 5: monthName = "Май"; break;
+            case 6: monthName = "Июнь"; break;
+            case 7: monthName = "Июль"; break;
+            case 8: monthName = "Август"; break;
+            case 9: monthName = "Сентябрь"; break;
+            case 10: monthName = "Октябрь"; break;
+            case 11: monthName = "Ноябрь"; break;
+            case 12: monthName = "Декабрь"; break;
         }
+        monthName += " " + date.getYear();
 
-        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-        setHeader(keyboard, rec, monthName);
-        setBody(keyboard, dateStr.substring(2));
-        keyboardMarkup.setKeyboard(keyboard);
-
-        return keyboardMarkup;
+        keyboard.next(3);
+        keyboard.add("<", Json.set("dp_dt", dateStr).set("dp_prev", "p"));
+        keyboard.add(monthName, Json.set("dp_dt", dateStr));
+        keyboard.add(">", Json.set("dp_dt", dateStr).set("dp_next", "p"));
     }
 
-    private void setHeader(
-            List<List<InlineKeyboardButton>> keyboard,
-            DataRec rec, String monthName
-    ){
+    private void setBody(IKeyboard keyboard, String monthYear) {
 
-        List<InlineKeyboardButton> keyboardRow = new ArrayList<>();
-
-        rec.put("dp_prev", "p");
-        InlineKeyboardButton buttonPrevMonth = new InlineKeyboardButton();
-        buttonPrevMonth.setText("<");
-        buttonPrevMonth.setCallbackData(new Gson().toJson(rec));
-        keyboardRow.add(buttonPrevMonth);
-        rec.remove("dp_prev");
-
-        InlineKeyboardButton button2 = new InlineKeyboardButton();
-        button2.setText(monthName);
-        button2.setCallbackData(new Gson().toJson(rec));
-        keyboardRow.add(button2);
-
-        rec.put("dp_next", "n");
-        InlineKeyboardButton button3 = new InlineKeyboardButton();
-        button3.setText(">");
-        button3.setCallbackData(new Gson().toJson(rec));
-        keyboardRow.add(button3);
-
-        keyboard.add(keyboardRow);
-    }
-
-    private void setBody(
-            List<List<InlineKeyboardButton>> keyboard,
-            String monthYear
-    ){
-
+        keyboard.next(4,4,4,4);
         for (int a = 1; a <= 4; a++){
-            List<InlineKeyboardButton> keyboardRow = new ArrayList<>();
-
             for (int i = 1; i <= 4; i++) {
-                InlineKeyboardButton button = new InlineKeyboardButton();
 
                 String day = String.valueOf(startDay);
+                String startDayStr = String.valueOf(startDay);
 
                 if (startDay < 10) day = "0" + day;
                 if (designate.contains(day + monthYear)) {
-                    button.setText("• " + startDay + " •");
-                } else {
-                    button.setText(String.valueOf(startDay));
+                    startDayStr = "• " + startDay + " •";
                 }
 
-                if (step != null){
-                    button.setCallbackData("{\"dp_sel\":" + day + monthYear
-                            + ", \"step\":" + step + "}");
-                } else {
-                    button.setCallbackData("{\"dp_sel\":" + day + monthYear + "}");
-                }
-                keyboardRow.add(button);
+                keyboard.add(startDayStr, Json.set("dp_sel", day + monthYear));
                 startDay++;
             }
-            keyboard.add(keyboardRow);
         }
     }
 }
