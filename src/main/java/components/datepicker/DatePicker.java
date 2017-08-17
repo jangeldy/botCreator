@@ -1,7 +1,6 @@
 package components.datepicker;
 
 import components.keyboard.IKeyboard;
-import util.exceptions.DataRequestException;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -41,7 +40,7 @@ public class DatePicker {
                             .setReplyMarkup(generate())
             );
             ClearMessage.set(message.getChatId(), message.getMessageId());
-            throw new DataRequestException();
+            throw new RuntimeException("ignore");
 
         } else {
             return selectedDate;

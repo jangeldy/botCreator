@@ -194,23 +194,23 @@ class Handling {
             Mapping mapping, Class clazz
     ) throws Exception {
 
+        clearMessages(bot, globalParam.getChatId());
         handle.setGlobalParam(bot, update, globalParam, mapping.getStep());
 
-        if (!step.equals(lastStep)){
+        if (step != null && !step.equals(lastStep)){
             new StepParam(globalParam.getChatId(), lastStep + "_dr").remove();
             new StepParam(globalParam.getChatId(), lastStep).remove();
         }
 
         invokeMethod(clazz, mapping);
 
-        if (!handle.getChangedStep().equals(step)){
+        if (step != null && !handle.getChangedStep().equals(step)){
             new StepParam(globalParam.getChatId(), mapping.getStep() + "_dr").remove();
             new StepParam(globalParam.getChatId(), mapping.getStep()).remove();
         }
 
         lastStep = handle.getChangedStep();
         step = handle.getChangedStep();
-        clearMessages(bot, globalParam.getChatId());
         return handle.getRedirect();
     }
 
