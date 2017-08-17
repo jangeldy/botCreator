@@ -242,7 +242,7 @@ class Handling {
         String redirect = "-----> ";
         if (mapping.isRedirect()) {
             log.info(  "      |");
-            redirect = "      ┗--> REDIRECT --> ";
+            redirect = "      └--> REDIRECT --> ";
         } else {
             log.info(" ");
         }
