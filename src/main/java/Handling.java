@@ -1,6 +1,5 @@
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import exceptions.DataRequestException;
 import handling.AbstractHandle;
 import handling.impl.DefaultHandle;
 import org.apache.log4j.LogManager;
@@ -8,14 +7,12 @@ import org.apache.log4j.Logger;
 import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
-import util.AccessLevel;
+import util.accesslevel.AccessLevel;
 import util.ClearMessage;
 import util.GlobalParam;
 import util.StepParam;
-import util.databaseconfig.DataBaseConfig;
-import util.databaseconfig.ut.DataRec;
-import util.databaseconfig.ut.DataTable;
-import util.databaseconfig.ut.DataBaseUtils;
+import util.accesslevel.AccessLevelMap;
+import util.database.DataRec;
 import util.stepmapping.Mapping;
 import util.stepmapping.StepMapping;
 
@@ -29,7 +26,7 @@ class Handling {
     private String step;
     private String lastStep;
     private AbstractHandle handle;
-    private Logger log = LogManager.getLogger(this.getClass());
+    private Logger log = LogManager.getLogger(Handling.class);
 
     Handling() {
         handle = new DefaultHandle();
@@ -49,9 +46,9 @@ class Handling {
         if (globalParam.getAccessLevel() != AccessLevel.WITHOUT_ACCESS) {
 
             try {
-                mapping = runHandlingMethod(bot, update, globalParam, mapping);
+                mapping = handlingMethod(bot, update, globalParam, mapping);
                 while (mapping.isRedirect()) {
-                    mapping = runHandlingMethod(bot, update, globalParam, mapping);
+                    mapping = handlingMethod(bot, update, globalParam, mapping);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -70,20 +67,16 @@ class Handling {
 
         GlobalParam globalParam = new GlobalParam();
         String inputText;
-        int messageId;
 
         if (update.getMessage() == null) {
             inputText = update.getCallbackQuery().getMessage().getText();
-            messageId = update.getCallbackQuery().getMessage().getMessageId();
         } else {
             inputText = update.getMessage().getText();
-            messageId = update.getMessage().getMessageId();
         }
 
-        globalParam.setMessageId(messageId);
         globalParam.setInputText(inputText);
         globalParam.setChatId(chatId);
-        globalParam.setAccessLevel(getAccessLevel(chatId));
+        globalParam.setAccessLevel(AccessLevelMap.get(chatId));
         globalParam.setQueryData(getQueryData(update));
         return globalParam;
     }
@@ -165,30 +158,6 @@ class Handling {
 
 
     /**
-     * Получение уровня доступа
-     * @param chatId - id чата
-     * @return - AccessLevel
-     */
-    private AccessLevel getAccessLevel(long chatId) {
-
-        AccessLevel accessLevel = AccessLevel.READ;
-        DataBaseUtils dbUtils = new DataBaseUtils(DataBaseConfig.dataSource());
-        DataTable dataTable = dbUtils.query(
-                "SELECT a.enum_name FROM users u " +
-                        "INNER JOIN access_level a ON u.id_access_level = a.id " +
-                        "WHERE u.chat_id = ?", chatId
-        );
-
-        if (dataTable.size() == 1) {
-            String enumName = dataTable.get(0).getString("enum_name");
-            accessLevel = AccessLevel.valueOf(enumName);
-        }
-
-        return accessLevel;
-    }
-
-
-    /**
      * Запуск обрабатывающего метода соответствующего класса
      * @param bot         - bot
      * @param update      - объект входящего запроса
@@ -197,92 +166,77 @@ class Handling {
      * @return redirectMapping
      * @throws Exception - Exception
      */
-    private Mapping runHandlingMethod(
+    private Mapping handlingMethod(
             Bot bot, Update update,
             GlobalParam globalParam, Mapping mapping
     ) throws Exception {
 
-        // Очистка сообщений
-        for (int messageId : ClearMessage.get(globalParam.getChatId())) {
-            try {
-                DeleteMessage deleteMessage = new DeleteMessage();
-                deleteMessage.setChatId(String.valueOf(globalParam.getChatId()));
-                deleteMessage.setMessageId(messageId);
-                bot.deleteMessage(deleteMessage);
-            } catch (Exception ignore) {}
-        }
-
-
-        // вывод маппинга в консоль
         printMapping(mapping);
-
-
-        // запсук метода
         String className = mapping.getHandleClassName();
 
         if (className.equals(handle.getClass().getSimpleName())) {
-
             Class<?> clazz = handle.getClass();
-            handle.setGlobalParam(bot, update, globalParam, mapping.getStep());
-
-            if (!step.equals(lastStep)){
-                new StepParam(globalParam.getChatId(), lastStep + "_dr").remove();
-                new StepParam(globalParam.getChatId(), lastStep).remove();
-            }
-
-            invokeMethod(clazz, mapping);
-
-            if (!handle.getChangedStep().equals(step)){
-                new StepParam(globalParam.getChatId(), mapping.getStep() + "_dr").remove();
-                new StepParam(globalParam.getChatId(), mapping.getStep()).remove();
-            }
-
-            lastStep = handle.getChangedStep();
-            step = handle.getChangedStep();
-            return handle.getRedirect();
+            return processMethod(bot, update, globalParam, mapping, clazz);
         }
         else {
 
             Class<?> clazz = Class.forName("handling.impl." + className);
             Constructor<?> ctor = clazz.getConstructor();
-
             handle = (AbstractHandle) ctor.newInstance();
-            handle.setGlobalParam(bot, update, globalParam, mapping.getStep());
-
-            if (!step.equals(lastStep)){
-                new StepParam(globalParam.getChatId(), lastStep + "_dr").remove();
-                new StepParam(globalParam.getChatId(), lastStep).remove();
-            }
-
-            invokeMethod(clazz, mapping);
-
-            if (!handle.getChangedStep().equals(step)){
-                new StepParam(globalParam.getChatId(), mapping.getStep() + "_dr").remove();
-                new StepParam(globalParam.getChatId(), mapping.getStep()).remove();
-            }
-
-            lastStep = handle.getChangedStep();
-            step = handle.getChangedStep();
-            return handle.getRedirect();
+            return processMethod(bot, update, globalParam, mapping, clazz);
         }
     }
 
 
+    private Mapping processMethod(
+            Bot bot, Update update,
+            GlobalParam globalParam,
+            Mapping mapping, Class clazz
+    ) throws Exception {
+
+        handle.setGlobalParam(bot, update, globalParam, mapping.getStep());
+
+        if (!step.equals(lastStep)){
+            new StepParam(globalParam.getChatId(), lastStep + "_dr").remove();
+            new StepParam(globalParam.getChatId(), lastStep).remove();
+        }
+
+        invokeMethod(clazz, mapping);
+
+        if (!handle.getChangedStep().equals(step)){
+            new StepParam(globalParam.getChatId(), mapping.getStep() + "_dr").remove();
+            new StepParam(globalParam.getChatId(), mapping.getStep()).remove();
+        }
+
+        lastStep = handle.getChangedStep();
+        step = handle.getChangedStep();
+        clearMessages(bot, globalParam.getChatId());
+        return handle.getRedirect();
+    }
+
+
+    /**
+     * Запсук метода обработки
+     * @param clazz - класс
+     * @param mapping - маппинг
+     * @throws Exception - Exception
+     */
     private void invokeMethod(Class clazz, Mapping mapping) throws Exception {
         try {
             Method method = clazz.getMethod(mapping.getHandleMethod());
             method.invoke(handle);
         } catch (InvocationTargetException e){
-            if (!e.getTargetException()
-                    .getClass()
-                    .getSimpleName()
-                    .equals("DataRequestException")){
+            if (!e.getTargetException().getMessage().equals("ignore")){
                 e.getCause().printStackTrace();
             }
         }
     }
 
 
+    /**
+     * Вывод маппинга в консоль
+     * @param mapping - mapping
+     */
     private void printMapping(Mapping mapping) {
 
         String redirect = "";
@@ -299,6 +253,23 @@ class Handling {
                 "COMMANDTEXT:" + mapping.getCommandText()
         );
         log.info(" ");
+    }
+
+
+    /**
+     * Очистка сообщений
+     * @param bot - бот
+     * @param chatId - id чата
+     */
+    private void clearMessages(Bot bot, long chatId) {
+        for (int messageId : ClearMessage.get(chatId)) {
+            try {
+                DeleteMessage deleteMessage = new DeleteMessage();
+                deleteMessage.setChatId(String.valueOf(chatId));
+                deleteMessage.setMessageId(messageId);
+                bot.deleteMessage(deleteMessage);
+            } catch (Exception ignore) {}
+        }
     }
 
 }

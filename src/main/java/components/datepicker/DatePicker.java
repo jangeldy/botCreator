@@ -1,18 +1,16 @@
 package components.datepicker;
 
-import com.google.gson.Gson;
 import components.keyboard.IKeyboard;
-import exceptions.DataRequestException;
+import util.exceptions.DataRequestException;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import util.ClearMessage;
 import util.Json;
-import util.databaseconfig.ut.DataRec;
+import util.database.DataRec;
 import org.joda.time.DateTime;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

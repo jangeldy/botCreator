@@ -1,19 +1,18 @@
 package util;
 
-import util.databaseconfig.ut.DataRec;
+import util.accesslevel.AccessLevel;
+import util.database.DataRec;
 
 public class GlobalParam {
 
     private String inputText;
     private DataRec queryData;
     private AccessLevel accessLevel;
-    private int messageId = -1;
     private long chatId = -1;
 
     public GlobalParam() {
         this.queryData = new DataRec();
         this.accessLevel = AccessLevel.READ;
-        this.messageId = -1;
         this.chatId = -1;
     }
 
@@ -39,14 +38,6 @@ public class GlobalParam {
 
     public void setAccessLevel(AccessLevel accessLevel) {
         this.accessLevel = accessLevel;
-    }
-
-    public int getMessageId() {
-        return messageId;
-    }
-
-    public void setMessageId(int messageId) {
-        this.messageId = messageId;
     }
 
     public long getChatId() {

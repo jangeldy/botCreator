@@ -1,7 +1,6 @@
 package database;
 
 import database.dao.*;
-import util.databaseconfig.DataBaseConfig;
 
 import javax.sql.DataSource;
 
@@ -14,10 +13,6 @@ public class DaoFactory {
 
     public static DaoFactory getInstance() {
         return ourInstance;
-    }
-
-    public CategoryDao getCategoryDao() {
-        return new CategoryDaoImpl(source);
     }
 
     public UserDao getUserDao() {

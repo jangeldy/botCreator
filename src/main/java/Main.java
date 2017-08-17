@@ -1,13 +1,12 @@
 import bgtasks.SchedulingConfig;
 import bgtasks.SchedulingTasks;
-import util.databaseconfig.DataBaseProps;
+import util.database.AppProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import util.stepmapping.StepMapping;
-import util.TelegramProps;
 
 public class Main {
 
@@ -23,10 +22,9 @@ public class Main {
             initialize();
 
             Bot bot = new Bot();
-            TelegramProps props = new TelegramProps();
             SchedulingTasks.setBot(bot);
-            bot.setBotUserName(props.getProp("botUserName"));
-            bot.setBotToken(props.getProp("botToken"));
+            bot.setBotUserName(AppProperties.getProp("botUserName"));
+            bot.setBotToken(AppProperties.getProp("botToken"));
 
             telegramBotsApi.registerBot(bot);
             log.info("Telegrams bot is running");
@@ -37,8 +35,8 @@ public class Main {
     }
 
     private static void initialize() throws Exception {
+        AppProperties.init("app.properties");
         StepMapping.initializeMapping();
-        new DataBaseProps().initProperty();
         new AnnotationConfigApplicationContext(SchedulingConfig.class);
         ApiContextInitializer.init();
     }

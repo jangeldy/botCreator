@@ -9,5 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Step {
 
-    String value() default "";
+    String value();
+
+    String commandText() default "";
 }

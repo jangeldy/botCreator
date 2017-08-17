@@ -5,7 +5,7 @@ import util.stepmapping.Step;
 
 public class GroupMessageHandle extends AbstractHandle {
 
-    @Step
+    @Step("groupMessage")
     public void groupMessage() throws Exception {
 
     }

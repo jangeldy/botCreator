@@ -1,22 +1,19 @@
 package handling;
 
 import database.DaoFactory;
-import exceptions.DataRequestException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import util.AccessLevel;
+import util.accesslevel.AccessLevel;
 import util.ClearMessage;
 import util.GlobalParam;
 import util.StepParam;
-import util.databaseconfig.ut.DataRec;
+import util.database.DataRec;
 import util.stepmapping.Mapping;
 import util.stepmapping.StepMapping;
-
-import java.util.List;
 
 public class AbstractHandle {
 
@@ -136,7 +133,7 @@ public class AbstractHandle {
                     .setText(messageText)
             ));
 
-            throw new DataRequestException();
+            throw new RuntimeException("ignore");
         }
     }
 }

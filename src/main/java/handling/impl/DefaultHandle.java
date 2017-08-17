@@ -6,7 +6,7 @@ import util.stepmapping.Step;
 
 public class DefaultHandle extends AbstractHandle {
 
-    @Step
+    @Step("defaultStep")
     public void defaultStep() throws Exception {
 
     }

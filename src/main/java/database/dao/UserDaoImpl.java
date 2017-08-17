@@ -1,7 +1,7 @@
 package database.dao;
 
 import database.entity.UserEntity;
-import util.databaseconfig.ut.DataBaseUtils;
+import util.database.DataBaseUtils;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;

@@ -24,18 +24,20 @@ public class StepMapping {
             for (Method method : methods) {
 
                 if (method.isAnnotationPresent(Step.class)) {
+
+
                     Step step = method.getAnnotation(Step.class);
-                    String stepName = method.getName();
+                    String stepName = step.value();
+                    String commandText = step.commandText();
+
+                    Mapping mapping = new Mapping();
+                    mapping.setHandleClassName(clazz.getSimpleName());
+                    mapping.setHandleMethod(method.getName());
+                    mapping.setStep(stepName);
+                    mapping.setCommandText(commandText);
 
                     if (!stepMappingMap.containsKey(stepName)){
-
-                        Mapping mapping = new Mapping();
-                        mapping.setHandleClassName(clazz.getSimpleName());
-                        mapping.setHandleMethod(method.getName());
-                        mapping.setStep(stepName);
-                        mapping.setCommandText(step.value());
                         stepMappingMap.put(stepName, mapping);
-
                     }
                     else {
                         throw new Exception(
@@ -46,23 +48,16 @@ public class StepMapping {
                         );
                     }
 
-                    if (!step.value().equals("")){
-                        if (!commandMappingMap.containsKey(step.value())){
-
-                            Mapping mapping = new Mapping();
-                            mapping.setHandleClassName(clazz.getSimpleName());
-                            mapping.setHandleMethod(method.getName());
-                            mapping.setStep(stepName);
-                            mapping.setCommandText(step.value());
-                            commandMappingMap.put(step.value(), mapping);
-
+                    if (!commandText.equals("")){
+                        if (!commandMappingMap.containsKey(commandText)){
+                            commandMappingMap.put(commandText, mapping);
                         }
                         else {
                             throw new Exception(
-                                    "Error when reading a commandText \"" + step.value() + "\" in class "
+                                    "Error when reading a commandText \"" + commandText + "\" in class "
                                             + clazz.getSimpleName()
                                             + "; CommandText already exists in class "
-                                            + commandMappingMap.get(step.value()).getHandleClassName()
+                                            + commandMappingMap.get(commandText).getHandleClassName()
                             );
                         }
                     }
