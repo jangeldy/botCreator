@@ -239,18 +239,19 @@ class Handling {
      */
     private void printMapping(Mapping mapping) {
 
-        String redirect = "";
+        String redirect = "-----> ";
         if (mapping.isRedirect()) {
-            redirect = "REDIRECT --> ";
+            log.info(  "      |");
+            redirect = "      ┗--> REDIRECT --> ";
+        } else {
+            log.info(" ");
         }
 
-        log.info(" ");
         log.info(
-                "-----> " + redirect +
-                "CLASSNAME:" + mapping.getHandleClassName() + " ---> " +
-                "METHODNAME:" + mapping.getHandleMethod() + " ---> " +
-                "STEP:" + mapping.getStep() + " ---> " +
-                "COMMANDTEXT:" + mapping.getCommandText()
+                redirect
+                + mapping.getHandleClassName() + " ---> "
+                + mapping.getStep() + " ---> "
+                + mapping.getCommandText()
         );
         log.info(" ");
     }

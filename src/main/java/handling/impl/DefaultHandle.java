@@ -7,6 +7,6 @@ public class DefaultHandle extends AbstractHandle {
 
     @Step("defaultStep")
     public void defaultStep() throws Exception {
-
+        redirect("groupMessage");
     }
 }
