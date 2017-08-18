@@ -1,5 +1,6 @@
 import bgtasks.SchedulingConfig;
 import bgtasks.SchedulingTasks;
+import util.accesslevel.AccessLevelMap;
 import util.database.AppProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -35,7 +36,8 @@ public class Main {
     }
 
     private static void initialize() throws Exception {
-        AppProperties.init("app.properties");
+        new AppProperties().init("app.properties");
+        new AccessLevelMap().init();
         StepMapping.initializeMapping();
         new AnnotationConfigApplicationContext(SchedulingConfig.class);
         ApiContextInitializer.init();

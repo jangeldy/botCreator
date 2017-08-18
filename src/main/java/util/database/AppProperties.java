@@ -9,7 +9,7 @@ public class AppProperties {
 
     private static Properties properties = new Properties();
 
-    public static void init(String fileName) {
+    public void init(String fileName) {
 
         Logger log = LogManager.getLogger(AppProperties.class);
 

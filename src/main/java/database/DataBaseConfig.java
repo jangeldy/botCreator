@@ -5,9 +5,9 @@ import util.database.AppProperties;
 
 import javax.sql.DataSource;
 
-class DataBaseConfig {
+public class DataBaseConfig {
 
-    static DataSource dataSource() {
+    public static DataSource dataSource() {
         DriverManagerDataSource driver = new DriverManagerDataSource();
         driver.setDriverClassName(AppProperties.getProp("jdbc.driverClassName"));
         driver.setUrl(AppProperties.getProp("jdbc.url"));
