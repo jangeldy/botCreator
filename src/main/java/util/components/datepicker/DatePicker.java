@@ -1,6 +1,6 @@
-package components.datepicker;
+package util.components.datepicker;
 
-import components.keyboard.IKeyboard;
+import util.components.keyboard.IKeyboard;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -14,6 +14,7 @@ import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -60,10 +61,18 @@ public class DatePicker {
         }
 
         if (queryData.containsKey("dp_dt")){
+
             date = new DateTime(queryData.getDate("dp_dt"));
             queryData.remove("dp_dt");
+
         } else {
-            date = new DateTime();
+
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            date = new DateTime(cal.getTime());
         }
 
         if (queryData.containsKey("dp_next")){
@@ -116,22 +125,8 @@ public class DatePicker {
 
     private void setHeader(IKeyboard keyboard, String dateStr){
 
-        String monthName = "";
-        switch (date.getMonthOfYear()){
-            case 1: monthName = "Январь"; break;
-            case 2: monthName = "Февраль"; break;
-            case 3: monthName = "Март"; break;
-            case 4: monthName = "Апрель"; break;
-            case 5: monthName = "Май"; break;
-            case 6: monthName = "Июнь"; break;
-            case 7: monthName = "Июль"; break;
-            case 8: monthName = "Август"; break;
-            case 9: monthName = "Сентябрь"; break;
-            case 10: monthName = "Октябрь"; break;
-            case 11: monthName = "Ноябрь"; break;
-            case 12: monthName = "Декабрь"; break;
-        }
-        monthName += " " + date.getYear();
+        DateFormat df2 = new SimpleDateFormat("MMM");
+        String monthName = df2.format(date) + " " + date.getYear();
 
         keyboard.next(3);
         keyboard.add("<", Json.set("dp_dt", dateStr).set("dp_prev", "p"));

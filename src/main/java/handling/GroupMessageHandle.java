@@ -1,6 +1,6 @@
-package handling.impl;
+package handling;
 
-import handling.AbstractHandle;
+import util.handle.AbstractHandle;
 import util.stepmapping.Step;
 
 public class GroupMessageHandle extends AbstractHandle {

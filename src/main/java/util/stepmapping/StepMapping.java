@@ -1,6 +1,6 @@
 package util.stepmapping;
 
-import handling.AbstractHandle;
+import util.handle.AbstractHandle;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
@@ -15,7 +15,7 @@ public class StepMapping {
 
     public static void initializeMapping() throws Exception {
 
-        Reflections reflections = new Reflections("handling.impl");
+        Reflections reflections = new Reflections("handling");
         Set<Class<? extends AbstractHandle>> classes = reflections.getSubTypesOf(AbstractHandle.class);
 
         for (Class clazz : classes){

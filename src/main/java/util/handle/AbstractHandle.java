@@ -1,4 +1,4 @@
-package handling;
+package util.handle;
 
 import database.DaoFactory;
 import org.apache.log4j.LogManager;
@@ -17,18 +17,18 @@ import util.stepmapping.StepMapping;
 
 public class AbstractHandle {
 
-    protected Logger log = LogManager.getLogger(this.getClass());
-    protected DaoFactory daoFactory = DaoFactory.getInstance();
-    protected TelegramLongPollingBot bot;
-    protected Update update;
+    public Logger log = LogManager.getLogger(AbstractHandle.class);
+    public DaoFactory daoFactory = DaoFactory.getInstance();
+    public TelegramLongPollingBot bot;
+    public Update update;
 
     // параметры команды
-    protected String step;
-    protected String inputText;
-    protected DataRec queryData;
-    protected AccessLevel accessLevel;
-    protected DataRec param;
-    protected long chatId;
+    public String step;
+    public String inputText;
+    public DataRec queryData;
+    public AccessLevel accessLevel;
+    public DataRec param;
+    public long chatId;
 
     //
     private Mapping redirectMapping;
@@ -70,7 +70,7 @@ public class AbstractHandle {
      * Перенапрвления команды
      * @param step - шаг
      */
-    protected void redirect(String step){
+    public void redirect(String step){
 
         if (step == null
                 || step.trim().equals("")
@@ -88,7 +88,7 @@ public class AbstractHandle {
      * Для очистки сообщения
      * @param message - сообщение
      */
-    protected void clearMessage(Message message){
+    public void clearMessage(Message message){
         ClearMessage.set(message.getChatId(), message.getMessageId());
     }
 
@@ -99,7 +99,7 @@ public class AbstractHandle {
      * @param step - для какого step
      * @return - DataRec
      */
-    protected DataRec setParam(long chatId, String step){
+    public DataRec setParam(long chatId, String step){
         return new StepParam(chatId, step).get();
     }
 
@@ -108,12 +108,12 @@ public class AbstractHandle {
      * @param step - для какого step
      * @return - DataRec
      */
-    protected DataRec setParam(String step){
+    public DataRec setParam(String step){
         return new StepParam(chatId, step).get();
     }
 
 
-    protected String dataRequest(String messageText) throws Exception {
+    public String dataRequest(String messageText) throws Exception {
 
         DataRec param = new StepParam(chatId, step + "_dr").get();
         if (param.containsKey(messageText)){

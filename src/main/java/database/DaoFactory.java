@@ -1,5 +1,6 @@
 package database;
 
+import config.AppConfig;
 import database.dao.*;
 
 import javax.sql.DataSource;
@@ -8,7 +9,7 @@ public class DaoFactory {
 
     private DaoFactory(){}
 
-    private static DataSource source = DataBaseConfig.dataSource();
+    private static DataSource source = AppConfig.dataSource();
     private static DaoFactory ourInstance = new DaoFactory();
 
     public static DaoFactory getInstance() {

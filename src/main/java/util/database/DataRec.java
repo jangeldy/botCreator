@@ -1,8 +1,10 @@
 package util.database;
 
+import org.glassfish.grizzly.http.util.TimeStamp;
 import org.joda.time.DateTime;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -215,7 +217,9 @@ public class DataRec extends HashMap<String, Object> {
             return (Date) object;
         } else if (object instanceof DateTime) {
             return ((DateTime) object).toDate();
-        } else if (object instanceof String) {
+        } else if (object instanceof Timestamp){
+            return new Date(((Timestamp) object).getTime());
+        }else if (object instanceof String) {
 
             String string = object.toString().trim();
             Matcher m1 = Pattern.compile("^\\d\\d-\\d\\d-\\d\\d\\d\\d$").matcher(string);

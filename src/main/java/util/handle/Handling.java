@@ -1,7 +1,9 @@
+package util.handle;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import handling.AbstractHandle;
-import handling.impl.DefaultHandle;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import handling.DefaultHandle;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
@@ -21,14 +23,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-class Handling {
+public class Handling {
 
     private String step;
     private String lastStep;
     private AbstractHandle handle;
     private Logger log = LogManager.getLogger(Handling.class);
 
-    Handling() {
+    public Handling() {
         handle = new DefaultHandle();
     }
 
@@ -38,7 +40,7 @@ class Handling {
      * @param bot    - бот
      * @param update - объект входящего запроса
      */
-    void start(Bot bot, Update update, Message message) {
+    public void start(TelegramLongPollingBot bot, Update update, Message message) {
 
         GlobalParam globalParam = getGlobalParam(update, message.getChatId());
         Mapping mapping = getMapping(update, message, globalParam.getQueryData());
@@ -167,7 +169,7 @@ class Handling {
      * @throws Exception - Exception
      */
     private Mapping handlingMethod(
-            Bot bot, Update update,
+            TelegramLongPollingBot bot, Update update,
             GlobalParam globalParam, Mapping mapping
     ) throws Exception {
 
@@ -189,7 +191,7 @@ class Handling {
 
 
     private Mapping processMethod(
-            Bot bot, Update update,
+            TelegramLongPollingBot bot, Update update,
             GlobalParam globalParam,
             Mapping mapping, Class clazz
     ) throws Exception {
@@ -262,7 +264,7 @@ class Handling {
      * @param bot - бот
      * @param chatId - id чата
      */
-    private void clearMessages(Bot bot, long chatId) {
+    private void clearMessages(TelegramLongPollingBot bot, long chatId) {
         for (int messageId : ClearMessage.get(chatId)) {
             try {
                 DeleteMessage deleteMessage = new DeleteMessage();

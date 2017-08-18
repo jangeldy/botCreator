@@ -1,4 +1,4 @@
-package components.keyboard;
+package util.components.keyboard;
 
 import com.google.gson.Gson;
 import util.database.DataRec;

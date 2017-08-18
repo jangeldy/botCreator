@@ -1,6 +1,9 @@
+package util.handle;
+
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import util.handle.Handling;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,11 +55,11 @@ public class Bot extends TelegramLongPollingBot {
         return botToken;
     }
 
-    void setBotUserName(String botUserName){
+    public void setBotUserName(String botUserName){
         this.botUserName = botUserName;
     }
 
-    void setBotToken(String botToken){
+    public void setBotToken(String botToken){
         this.botToken = botToken;
     }
 

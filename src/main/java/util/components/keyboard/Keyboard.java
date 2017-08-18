@@ -1,4 +1,4 @@
-package components.keyboard;
+package util.components.keyboard;
 
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardButton;

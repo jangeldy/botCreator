@@ -1,16 +1,17 @@
 package util.accesslevel;
 
-import database.DataBaseConfig;
 import util.database.DataBaseUtils;
 import util.database.DataRec;
 import util.database.DataTable;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AccessLevelMap {
 
     private static Map<Long, AccessLevel> accessLevelMap = new HashMap<>();
+    private static DataSource source = null;
 
     public static AccessLevel get(long chatId) {
         return accessLevelMap.getOrDefault(chatId, AccessLevel.READ);
@@ -18,7 +19,7 @@ public class AccessLevelMap {
 
     public static void set(long chatId, AccessLevel accessLevel) {
 
-        DataBaseUtils utils = new DataBaseUtils(DataBaseConfig.dataSource());
+        DataBaseUtils utils = new DataBaseUtils(source);
         DataRec dataRec = utils.queryDataRec(
                 "select * from access_level where enum_name = ?",
                 accessLevel.toString()
@@ -41,9 +42,10 @@ public class AccessLevelMap {
         accessLevelMap.put(chatId, accessLevel);
     }
 
-    public void init() {
+    public void init(DataSource dataSource) {
 
-        DataBaseUtils utils = new DataBaseUtils(DataBaseConfig.dataSource());
+        source = dataSource;
+        DataBaseUtils utils = new DataBaseUtils(source);
         DataTable accessLevelTable = utils.query(
                 "SELECT table_schema,table_name " +
                         "FROM information_schema.tables " +
