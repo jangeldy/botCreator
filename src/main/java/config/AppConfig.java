@@ -1,41 +1,54 @@
 package config;
 
-import bgtasks.SchedulingConfig;
 import bgtasks.SchedulingTasks;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import database.dao.UserDao;
+import database.dao.UserDaoImpl;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.ApiContextInitializer;
-import util.accesslevel.AccessLevelMap;
-import util.database.AppProperties;
-import util.handle.Bot;
-import util.stepmapping.StepMapping;
+import pro.nextbit.telegramconstructor.accesslevel.AccessLevelMap;
+import pro.nextbit.telegramconstructor.database.AppProperties;
+import pro.nextbit.telegramconstructor.handle.Bot;
+import pro.nextbit.telegramconstructor.stepmapping.StepMapping;
 
 import javax.sql.DataSource;
 
+@Configuration
+@EnableScheduling
 public class AppConfig {
 
     public Bot initBot() throws Exception {
 
-        new AppProperties().init("app.properties");
-        new AccessLevelMap().init(dataSource());
-        StepMapping.initializeMapping();
-        new AnnotationConfigApplicationContext(SchedulingConfig.class);
+        new AccessLevelMap().init(getDataSource());
+        StepMapping.initializeMapping("handling");
         ApiContextInitializer.init();
 
         Bot bot = new Bot();
         bot.setBotUserName(AppProperties.getProp("botUserName"));
         bot.setBotToken(AppProperties.getProp("botToken"));
-        SchedulingTasks.setBot(bot);
 
         return bot;
     }
 
-    public static DataSource dataSource() {
+    @Bean
+    public DataSource getDataSource() {
         DriverManagerDataSource driver = new DriverManagerDataSource();
         driver.setDriverClassName(AppProperties.getProp("jdbc.driverClassName"));
         driver.setUrl(AppProperties.getProp("jdbc.url"));
         driver.setUsername(AppProperties.getProp("jdbc.username"));
         driver.setPassword(AppProperties.getProp("jdbc.password"));
         return driver;
+    }
+
+    @Bean
+    public SchedulingTasks getSchedulingTasks() {
+        return new SchedulingTasks();
+    }
+
+    @Bean
+    public UserDao getUserDao() {
+        return new UserDaoImpl(getDataSource());
     }
 }

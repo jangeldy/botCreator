@@ -76,6 +76,14 @@
             <version>0.9.11</version>
         </dependency>
 
+        <dependency>
+            <groupId>pro.nextbit.telegramconstructor</groupId>
+            <artifactId>telegramconstructor</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/telegramconstructor-1.0.jar</systemPath>
+        </dependency>
+
     </dependencies>
 
     <build>

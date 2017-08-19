@@ -1,7 +1,8 @@
 package database.dao;
 
 import database.entity.UserEntity;
-import util.database.DataBaseUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import pro.nextbit.telegramconstructor.database.DataBaseUtils;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
