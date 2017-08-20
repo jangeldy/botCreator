@@ -1,6 +1,6 @@
 package pro.nextbit.telegramconstructor.stepmapping;
 
-import pro.nextbit.telegramconstructor.handle.AbstractHandle;
+import pro.nextbit.telegramconstructor.handle.AbsHandle;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
@@ -12,11 +12,14 @@ public class StepMapping {
 
     private static Map<String, Mapping> stepMappingMap = new HashMap<>();
     private static Map<String, Mapping> commandMappingMap = new HashMap<>();
+    private static String handlingPath = null;
 
-    public static void initializeMapping(String packageName) throws Exception {
+    public void initializeMapping(String packageName) throws Exception {
+
+        setHandlingPath(packageName);
 
         Reflections reflections = new Reflections(packageName);
-        Set<Class<? extends AbstractHandle>> classes = reflections.getSubTypesOf(AbstractHandle.class);
+        Set<Class<? extends AbsHandle>> classes = reflections.getSubTypesOf(AbsHandle.class);
 
         for (Class clazz : classes){
 
@@ -83,5 +86,13 @@ public class StepMapping {
 
     public static Mapping getMappingByCommandText(String commandText){
         return commandMappingMap.get(commandText);
+    }
+
+    public static String getHandlingPath() {
+        return handlingPath;
+    }
+
+    private static void setHandlingPath(String handlingPath) {
+        StepMapping.handlingPath = handlingPath;
     }
 }

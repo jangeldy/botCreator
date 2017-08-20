@@ -1,15 +1,14 @@
-package handling;
+package handling.impl;
 
+import database.DaoFactory;
 import database.dao.UserDao;
-import org.springframework.beans.factory.annotation.Autowired;
-import pro.nextbit.telegramconstructor.handle.AbstractHandle;
+import handling.AbstractHandle;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import pro.nextbit.telegramconstructor.stepmapping.Step;
 
 public class DefaultHandle extends AbstractHandle {
 
-    @Autowired
-    private UserDao userDao;
+    private UserDao userDao = DaoFactory.getInstance().getUserDao();
 
     @Step("defaultStep")
     public void defaultStep() throws Exception {

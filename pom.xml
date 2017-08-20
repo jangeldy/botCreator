@@ -13,7 +13,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>4.0.6.RELEASE</version>
+            <version>4.3.10.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -25,13 +25,13 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.0.6.RELEASE</version>
+            <version>4.3.10.RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>4.3.9.RELEASE</version>
+            <version>4.3.10.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -76,6 +76,7 @@
             <version>0.9.11</version>
         </dependency>
 
+<!--
         <dependency>
             <groupId>pro.nextbit.telegramconstructor</groupId>
             <artifactId>telegramconstructor</artifactId>
@@ -83,6 +84,7 @@
             <scope>system</scope>
             <systemPath>${basedir}/lib/telegramconstructor-1.0.jar</systemPath>
         </dependency>
+-->
 
     </dependencies>
 

@@ -1,6 +1,6 @@
-package handling;
+package handling.impl;
 
-import pro.nextbit.telegramconstructor.handle.AbstractHandle;
+import handling.AbstractHandle;
 import pro.nextbit.telegramconstructor.stepmapping.Step;
 
 public class GroupMessageHandle extends AbstractHandle {

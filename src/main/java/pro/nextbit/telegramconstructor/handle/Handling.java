@@ -3,7 +3,6 @@ package pro.nextbit.telegramconstructor.handle;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import handling.DefaultHandle;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.telegram.telegrambots.api.methods.updatingmessages.DeleteMessage;
@@ -23,11 +22,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-public class Handling {
+class Handling {
 
     private String step;
     private String lastStep;
-    private AbstractHandle handle;
+    private AbsHandle handle;
     private Logger log = LogManager.getLogger(Handling.class);
 
 
@@ -36,7 +35,7 @@ public class Handling {
      * @param bot    - бот
      * @param update - объект входящего запроса
      */
-    public void start(TelegramLongPollingBot bot, Update update, Message message) {
+    void start(TelegramLongPollingBot bot, Update update, Message message) {
 
         GlobalParam globalParam = getGlobalParam(update, message.getChatId());
         Mapping mapping = getMapping(update, message, globalParam.getQueryData());
@@ -172,15 +171,15 @@ public class Handling {
         printMapping(mapping);
         String className = mapping.getHandleClassName();
 
-        if (className.equals(handle.getClass().getSimpleName())) {
+        if (handle != null && className.equals(handle.getClass().getSimpleName())) {
             Class<?> clazz = handle.getClass();
             return processMethod(bot, update, globalParam, mapping, clazz);
         }
         else {
 
-            Class<?> clazz = Class.forName("handling.impl." + className);
+            Class<?> clazz = Class.forName(StepMapping.getHandlingPath() + "." + className);
             Constructor<?> ctor = clazz.getConstructor();
-            handle = (AbstractHandle) ctor.newInstance();
+            handle = (AbsHandle) ctor.newInstance();
             return processMethod(bot, update, globalParam, mapping, clazz);
         }
     }

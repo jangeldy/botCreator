@@ -1,13 +1,17 @@
 package bgtasks;
 
+import database.DaoFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
-public class SchedulingTasks {
+import javax.sql.DataSource;
+
+public class BackgroundTasks {
 
     private static TelegramLongPollingBot bot;
+    private static DaoFactory daoFactory = DaoFactory.getInstance();
 
-    public static void setBot(TelegramLongPollingBot inputBot){
+    public void setBot(TelegramLongPollingBot inputBot){
         bot = inputBot;
     }
 

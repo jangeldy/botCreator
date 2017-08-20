@@ -14,9 +14,9 @@ import pro.nextbit.telegramconstructor.database.DataRec;
 import pro.nextbit.telegramconstructor.stepmapping.Mapping;
 import pro.nextbit.telegramconstructor.stepmapping.StepMapping;
 
-public class AbstractHandle {
+public class AbsHandle {
 
-    public Logger log = LogManager.getLogger(AbstractHandle.class);
+    public Logger log = LogManager.getLogger(AbsHandle.class);
     public TelegramLongPollingBot bot;
     public Update update;
 

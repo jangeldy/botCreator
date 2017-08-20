@@ -12,7 +12,7 @@ public class Mapping {
         return handleClassName;
     }
 
-    public void setHandleClassName(String handleClassName) {
+    void setHandleClassName(String handleClassName) {
         this.handleClassName = handleClassName;
     }
 
@@ -20,7 +20,7 @@ public class Mapping {
         return handleMethod;
     }
 
-    public void setHandleMethod(String handleMethod) {
+    void setHandleMethod(String handleMethod) {
         this.handleMethod = handleMethod;
     }
 
@@ -28,7 +28,7 @@ public class Mapping {
         return commandText;
     }
 
-    public void setCommandText(String commandText) {
+    void setCommandText(String commandText) {
         this.commandText = commandText;
     }
 
@@ -36,7 +36,7 @@ public class Mapping {
         return step;
     }
 
-    public void setStep(String step) {
+    void setStep(String step) {
         this.step = step;
     }
 
