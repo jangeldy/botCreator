@@ -1,5 +1,6 @@
 package pro.nextbit.telegramconstructor;
 
+import org.telegram.telegrambots.api.objects.Message;
 import pro.nextbit.telegramconstructor.accesslevel.AccessLevel;
 import pro.nextbit.telegramconstructor.database.DataRec;
 
@@ -9,6 +10,7 @@ public class GlobalParam {
     private DataRec queryData;
     private AccessLevel accessLevel;
     private long chatId = -1;
+    private Message message = null;
 
     public GlobalParam() {
         this.queryData = new DataRec();
@@ -48,4 +50,11 @@ public class GlobalParam {
         this.chatId = chatId;
     }
 
+    public Message getMessage() {
+        return message;
+    }
+
+    public void setMessage(Message message) {
+        this.message = message;
+    }
 }

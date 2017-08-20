@@ -27,6 +27,7 @@ public class AbsHandle {
     public AccessLevel accessLevel;
     public DataRec param;
     public long chatId;
+    public Message message;
 
     //
     private Mapping redirectMapping;
@@ -53,6 +54,7 @@ public class AbsHandle {
         this.redirectMapping = new Mapping();
         this.step = step;
         this.param = new StepParam(chatId, step).get();
+        this.message = globalParam.getMessage();
     }
 
     public String getChangedStep() {
@@ -87,7 +89,15 @@ public class AbsHandle {
      * @param message - сообщение
      */
     public void clearMessage(Message message){
-        ClearMessage.set(message.getChatId(), message.getMessageId());
+        new ClearMessage().clear(message);
+    }
+
+    /**
+     * Для очистки сообщения
+     * @param message - сообщение
+     */
+    public void clearMessageLater(Message message){
+        new ClearMessage().clearLater(message);
     }
 
 

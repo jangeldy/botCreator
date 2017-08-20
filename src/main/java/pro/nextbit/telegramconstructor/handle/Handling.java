@@ -21,6 +21,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.List;
 
 class Handling {
 
@@ -67,8 +68,10 @@ class Handling {
 
         if (update.getMessage() == null) {
             inputText = update.getCallbackQuery().getMessage().getText();
+            globalParam.setMessage(update.getCallbackQuery().getMessage());
         } else {
             inputText = update.getMessage().getText();
+            globalParam.setMessage(update.getMessage());
         }
 
         globalParam.setInputText(inputText);
@@ -191,7 +194,7 @@ class Handling {
             Mapping mapping, Class clazz
     ) throws Exception {
 
-        clearMessages(bot, globalParam.getChatId());
+        clearMessages(bot, globalParam.getMessage());
         handle.setGlobalParam(bot, update, globalParam, mapping.getStep());
 
         if (step != null && !step.equals(lastStep)){
@@ -257,13 +260,18 @@ class Handling {
     /**
      * Очистка сообщений
      * @param bot - бот
-     * @param chatId - id чата
+     * @param message - сообщение
      */
-    private void clearMessages(TelegramLongPollingBot bot, long chatId) {
-        for (int messageId : ClearMessage.get(chatId)) {
+    private void clearMessages(TelegramLongPollingBot bot, Message message) {
+
+        ClearMessage cm = new ClearMessage();
+        List<Integer> list = cm.get(message.getChatId());
+        list.addAll(cm.getAsLater(message));
+
+        for (int messageId : list) {
             try {
                 DeleteMessage deleteMessage = new DeleteMessage();
-                deleteMessage.setChatId(String.valueOf(chatId));
+                deleteMessage.setChatId(String.valueOf(message.getChatId()));
                 deleteMessage.setMessageId(messageId);
                 bot.deleteMessage(deleteMessage);
             } catch (Exception ignore) {}

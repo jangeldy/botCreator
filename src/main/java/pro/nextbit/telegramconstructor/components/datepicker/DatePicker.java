@@ -1,5 +1,7 @@
 package pro.nextbit.telegramconstructor.components.datepicker;
 
+import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageReplyMarkup;
+import pro.nextbit.telegramconstructor.StepParam;
 import pro.nextbit.telegramconstructor.components.keyboard.IKeyboard;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
@@ -24,26 +26,56 @@ public class DatePicker {
     private DateTime date;
     private int startDay;
     private List<String> designate;
+    private String step;
+    private boolean isEdit = false;
 
-    public DatePicker(DataRec queryData){
+    public DatePicker(DataRec queryData, String step){
         this.designate = new ArrayList<>();
+        this.step = step;
+
+        if (queryData.containsKey("dp_dt")) {
+            this.isEdit = true;
+        }
         calculateDates(queryData);
     }
 
-    public DateTime getDate(TelegramLongPollingBot bot, String messageText, long chatId) throws TelegramApiException {
+    public DateTime getDate(
+            TelegramLongPollingBot bot,
+            String messageText, Message message
+    ) throws TelegramApiException {
+
+        DataRec param = new StepParam(message.getChatId(), step + "_dr").get();
+        if (param.containsKey("dp_sel")){
+            selectedDate = new DateTime(param.getDate("dp_sel"));
+        }
 
         if (selectedDate == null){
 
-            Message message = bot.sendMessage(
-                    new SendMessage()
-                            .setText(messageText)
-                            .setChatId(chatId)
-                            .setReplyMarkup(generate())
-            );
-            ClearMessage.set(message.getChatId(), message.getMessageId());
+            if (isEdit) {
+
+                bot.editMessageReplyMarkup(
+                        new EditMessageReplyMarkup()
+                        .setReplyMarkup(generate())
+                        .setMessageId(message.getMessageId())
+                        .setChatId(message.getChatId())
+                );
+
+            } else {
+
+                Message msg = bot.sendMessage(
+                        new SendMessage()
+                                .setText(messageText)
+                                .setChatId(message.getChatId())
+                                .setReplyMarkup(generate())
+                );
+                new ClearMessage().clearLater(msg);
+            }
+
             throw new RuntimeException("ignore");
 
         } else {
+            param.put("dp_sel", selectedDate);
+            new ClearMessage().removeAsLater(bot, message.getChatId());
             return selectedDate;
         }
     }
@@ -126,12 +158,12 @@ public class DatePicker {
     private void setHeader(IKeyboard keyboard, String dateStr){
 
         DateFormat df2 = new SimpleDateFormat("MMM");
-        String monthName = df2.format(date) + " " + date.getYear();
+        String monthName = df2.format(date.toDate()) + " " + date.getYear();
 
         keyboard.next(3);
-        keyboard.add("<", Json.set("dp_dt", dateStr).set("dp_prev", "p"));
-        keyboard.add(monthName, Json.set("dp_dt", dateStr));
-        keyboard.add(">", Json.set("dp_dt", dateStr).set("dp_next", "p"));
+        keyboard.add("<", Json.set("dp_dt", dateStr).set("dp_prev", "p").set("step", step));
+        keyboard.add(monthName, Json.set("dp_dt", dateStr).set("step", step));
+        keyboard.add(">", Json.set("dp_dt", dateStr).set("dp_next", "p").set("step", step));
     }
 
     private void setBody(IKeyboard keyboard, String monthYear) {
@@ -148,7 +180,7 @@ public class DatePicker {
                     startDayStr = "• " + startDay + " •";
                 }
 
-                keyboard.add(startDayStr, Json.set("dp_sel", day + monthYear));
+                keyboard.add(startDayStr, Json.set("dp_sel", day + monthYear).set("step", step));
                 startDay++;
             }
         }

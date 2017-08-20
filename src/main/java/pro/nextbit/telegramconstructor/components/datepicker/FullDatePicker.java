@@ -1,5 +1,7 @@
 package pro.nextbit.telegramconstructor.components.datepicker;
 
+import org.telegram.telegrambots.api.methods.updatingmessages.EditMessageReplyMarkup;
+import pro.nextbit.telegramconstructor.StepParam;
 import pro.nextbit.telegramconstructor.components.keyboard.IKeyboard;
 import org.joda.time.DateTime;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
@@ -22,11 +24,16 @@ public class FullDatePicker {
     private DateTime selectedDate = null;
     private String step = null;
     private LinkedList<LinkedList<Integer>> monthDates = null;
+    private boolean isEdit = false;
 
     public FullDatePicker(DataRec queryData, String step) {
         this.step = step;
         this.queryData = queryData;
         this.monthDates = new LinkedList<>();
+
+        if (queryData.containsKey("dp_dt")) {
+            this.isEdit = true;
+        }
 
         if (!queryData.containsKey("dp_w")){
             calculateDates();
@@ -35,24 +42,36 @@ public class FullDatePicker {
 
     public DateTime getDate(
             TelegramLongPollingBot bot,
-            long chatId, String messageText
+            String messageText, Message message
     ) throws Exception {
+
+        DataRec param = new StepParam(message.getChatId(), step + "_dr").get();
+        if (param.containsKey("dp_sel")){
+            selectedDate = new DateTime(param.getDate("dp_sel"));
+        }
 
         if (selectedDate == null) {
 
-            if (queryData.containsKey("dp_w")) {
+            if (isEdit) {
 
+                bot.editMessageReplyMarkup(
+                        new EditMessageReplyMarkup()
+                                .setReplyMarkup(generate())
+                                .setMessageId(message.getMessageId())
+                                .setChatId(message.getChatId())
+                );
 
-            } else {
+            } else  {
 
-                Message message = bot.sendMessage(new SendMessage()
-                        .setChatId(chatId)
+                Message msg = bot.sendMessage(new SendMessage()
+                        .setChatId(message.getChatId())
                         .setText(messageText)
                         .setReplyMarkup(generate())
                 );
 
-                ClearMessage.set(message.getChatId(), message.getMessageId());
+                new ClearMessage().clearLater(msg);
                 throw new RuntimeException("ignore");
+
             }
 
         }
@@ -80,16 +99,16 @@ public class FullDatePicker {
         String monthName = df2.format(tempDate) + " " + tempDate.getYear();
 
         keyboard.next(3, 7);
-        keyboard.addButton("<", Json.set("dp_dte", df.format(prevMonth)).set("step", step));
-        keyboard.addButton(monthName, Json.set("dp_dte", df.format(tempDate.toDate())).set("step", step));
-        keyboard.addButton(">", Json.set("dp_dte", df.format(nextMonth)).set("step", step));
-        keyboard.addButton("Пн", Json.set("dp_dte", currentDate).set("dp_w", 1).set("step", step));
-        keyboard.addButton("Вт", Json.set("dp_dte", currentDate).set("dp_w", 2).set("step", step));
-        keyboard.addButton("Ср", Json.set("dp_dte", currentDate).set("dp_w", 3).set("step", step));
-        keyboard.addButton("Чт", Json.set("dp_dte", currentDate).set("dp_w", 4).set("step", step));
-        keyboard.addButton("Пт", Json.set("dp_dte", currentDate).set("dp_w", 5).set("step", step));
-        keyboard.addButton("Сб", Json.set("dp_dte", currentDate).set("dp_w", 6).set("step", step));
-        keyboard.addButton("Вс", Json.set("dp_dte", currentDate).set("dp_w", 7).set("step", step));
+        keyboard.addButton("<", Json.set("dp_dt", df.format(prevMonth)).set("step", step));
+        keyboard.addButton(monthName, Json.set("dp_dt", df.format(tempDate.toDate())).set("step", step));
+        keyboard.addButton(">", Json.set("dp_dt", df.format(nextMonth)).set("step", step));
+        keyboard.addButton("Пн", Json.set("dp_dt", currentDate).set("dp_w", 1).set("step", step));
+        keyboard.addButton("Вт", Json.set("dp_dt", currentDate).set("dp_w", 2).set("step", step));
+        keyboard.addButton("Ср", Json.set("dp_dt", currentDate).set("dp_w", 3).set("step", step));
+        keyboard.addButton("Чт", Json.set("dp_dt", currentDate).set("dp_w", 4).set("step", step));
+        keyboard.addButton("Пт", Json.set("dp_dt", currentDate).set("dp_w", 5).set("step", step));
+        keyboard.addButton("Сб", Json.set("dp_dt", currentDate).set("dp_w", 6).set("step", step));
+        keyboard.addButton("Вс", Json.set("dp_dt", currentDate).set("dp_w", 7).set("step", step));
     }
 
     private void generateBody(IKeyboard keyboard, Date prevMonth, Date nextMonth){
@@ -105,13 +124,13 @@ public class FullDatePicker {
                 if (day == -1) {
                     keyboard.addButton(
                             ".",
-                            Json.set("dp_dte", df.format(prevMonth))
+                            Json.set("dp_dt", df.format(prevMonth))
                                 .set("step", step)
                     );
                 } else if (day == -2){
                     keyboard.addButton(
                             ".",
-                            Json.set("dp_dte", df.format(nextMonth))
+                            Json.set("dp_dt", df.format(nextMonth))
                                 .set("step", step)
                     );
                 } else {
@@ -131,8 +150,8 @@ public class FullDatePicker {
             selectedDate = new DateTime(queryData.getDate("dp_sel"));
         }
 
-        if (queryData.containsKey("dp_dte")) {
-            tempDate = new DateTime(queryData.getDate("dp_dte"));
+        if (queryData.containsKey("dp_dt")) {
+            tempDate = new DateTime(queryData.getDate("dp_dt"));
         } else {
             tempDate = new DateTime();
         }
