@@ -4,8 +4,6 @@ import database.dao.UserDao;
 import handling.AbstractHandle;
 import org.joda.time.DateTime;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
-import pro.nextbit.telegramconstructor.components.TimePicker;
-import pro.nextbit.telegramconstructor.components.datepicker.DatePicker;
 import pro.nextbit.telegramconstructor.components.datepicker.FullDatePicker;
 import pro.nextbit.telegramconstructor.stepmapping.Step;
 
