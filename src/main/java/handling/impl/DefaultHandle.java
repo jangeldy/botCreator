@@ -1,31 +1,37 @@
 package handling.impl;
 
-import database.DaoFactory;
 import database.dao.UserDao;
 import handling.AbstractHandle;
 import org.joda.time.DateTime;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import pro.nextbit.telegramconstructor.components.TimePicker;
 import pro.nextbit.telegramconstructor.components.datepicker.DatePicker;
+import pro.nextbit.telegramconstructor.components.datepicker.FullDatePicker;
 import pro.nextbit.telegramconstructor.stepmapping.Step;
 
-import java.util.Date;
 
 public class DefaultHandle extends AbstractHandle {
 
-    private UserDao userDao = DaoFactory.getInstance().getUserDao();
+    private UserDao userDao = daoFactory.getUserDao();
 
     @Step("defaultStep")
     public void defaultStep() throws Exception {
 
-//        DateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        FullDatePicker tm = new FullDatePicker(queryData, step);
+        DateTime dateTime = tm.getDate(bot, "Выберите дату от", message);
 
-        DatePicker datePicker = new DatePicker(queryData, step);
-        DateTime date = datePicker.getDate(bot, "Выберите дату рождения", message);
-        String name = dataRequest("Введите имя");
+        FullDatePicker tm2 = new FullDatePicker(queryData, step);
+        DateTime dateTime2 = tm2.getDate(bot, "Выберите дату до", message);
 
         clearMessage(
                 bot.sendMessage(new SendMessage()
-                        .setText(name + date.toString())
+                        .setText("от" +dateTime.toString() + " " + tm.getWeek())
+                        .setChatId(chatId)
+                )
+        );
+        clearMessage(
+                bot.sendMessage(new SendMessage()
+                        .setText("до" + dateTime2.toString() + " " + tm2.getWeek())
                         .setChatId(chatId)
                 )
         );

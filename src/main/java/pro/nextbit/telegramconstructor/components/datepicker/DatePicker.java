@@ -28,15 +28,13 @@ public class DatePicker {
     private List<String> designate;
     private String step;
     private boolean isEdit = false;
+    private DataRec queryData;
 
     public DatePicker(DataRec queryData, String step){
         this.designate = new ArrayList<>();
         this.step = step;
+        this.queryData = queryData;
 
-        if (queryData.containsKey("dp_dt")) {
-            this.isEdit = true;
-        }
-        calculateDates(queryData);
     }
 
     public DateTime getDate(
@@ -45,8 +43,10 @@ public class DatePicker {
     ) throws TelegramApiException {
 
         DataRec param = new StepParam(message.getChatId(), step + "_dr").get();
-        if (param.containsKey("dp_sel")){
-            selectedDate = new DateTime(param.getDate("dp_sel"));
+        if (param.containsKey("dp_sel" + messageText)){
+            selectedDate = new DateTime(param.getDate("dp_sel" + messageText));
+        } else {
+            calculateDates(bot, message);
         }
 
         if (selectedDate == null){
@@ -74,8 +74,7 @@ public class DatePicker {
             throw new RuntimeException("ignore");
 
         } else {
-            param.put("dp_sel", selectedDate);
-            new ClearMessage().removeAsLater(bot, message.getChatId());
+            param.put("dp_sel" + messageText, selectedDate);
             return selectedDate;
         }
     }
@@ -84,19 +83,19 @@ public class DatePicker {
         this.designate = designate;
     }
 
-    private void calculateDates(DataRec queryData) {
+    private void calculateDates(TelegramLongPollingBot bot, Message message) {
 
+        if (queryData.containsKey("dp_dt")) {
+            this.isEdit = true;
+        }
 
         if (queryData.containsKey("dp_sel")){
             selectedDate = new DateTime(queryData.getDate("dp_sel"));
-            queryData.remove("dp_sel");
+            new ClearMessage().removeAsLater(bot, message.getChatId());
         }
 
         if (queryData.containsKey("dp_dt")){
-
             date = new DateTime(queryData.getDate("dp_dt"));
-            queryData.remove("dp_dt");
-
         } else {
 
             Calendar cal = Calendar.getInstance();
@@ -116,7 +115,6 @@ public class DatePicker {
                 date = date.dayOfMonth().withMinimumValue().plusMonths(1);
                 startDay = 1;
             }
-            queryData.remove("dp_next");
 
         } else if (queryData.containsKey("dp_prev")){
 
@@ -127,7 +125,6 @@ public class DatePicker {
                 date = date.dayOfMonth().withMinimumValue();
                 startDay = 1;
             }
-            queryData.remove("dp_prev");
 
         } else {
 
@@ -142,6 +139,11 @@ public class DatePicker {
 
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
         designate.add(df.format(new Date()));
+
+        queryData.remove("dp_sel");
+        queryData.remove("dp_dt");
+        queryData.remove("dp_next");
+        queryData.remove("dp_prev");
     }
 
     private InlineKeyboardMarkup generate() {

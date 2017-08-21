@@ -14,6 +14,7 @@ import pro.nextbit.telegramconstructor.database.DataRec;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 
@@ -25,6 +26,7 @@ public class FullDatePicker {
     private String step = null;
     private LinkedList<LinkedList<Integer>> monthDates = null;
     private boolean isEdit = false;
+    private int week = -1;
 
     public FullDatePicker(DataRec queryData, String step) {
         this.step = step;
@@ -35,9 +37,7 @@ public class FullDatePicker {
             this.isEdit = true;
         }
 
-        if (!queryData.containsKey("dp_w")){
-            calculateDates();
-        }
+
     }
 
     public DateTime getDate(
@@ -46,8 +46,11 @@ public class FullDatePicker {
     ) throws Exception {
 
         DataRec param = new StepParam(message.getChatId(), step + "_dr").get();
-        if (param.containsKey("dp_sel")){
-            selectedDate = new DateTime(param.getDate("dp_sel"));
+        if (param.containsKey("dp_sel" + messageText)){
+            selectedDate = new DateTime(param.getDate("dp_sel" + messageText));
+            week = param.getInt("dp_w" + messageText);
+        } else {
+            calculateDates(bot, message);
         }
 
         if (selectedDate == null) {
@@ -61,23 +64,31 @@ public class FullDatePicker {
                                 .setChatId(message.getChatId())
                 );
 
-            } else  {
+            } else {
 
-                Message msg = bot.sendMessage(new SendMessage()
-                        .setChatId(message.getChatId())
-                        .setText(messageText)
-                        .setReplyMarkup(generate())
+                Message msg = bot.sendMessage(
+                        new SendMessage()
+                                .setText(messageText)
+                                .setChatId(message.getChatId())
+                                .setReplyMarkup(generate())
                 );
-
                 new ClearMessage().clearLater(msg);
-                throw new RuntimeException("ignore");
-
             }
 
-        }
+            throw new RuntimeException("ignore");
 
-        return selectedDate;
+        } else {
+            param.put("dp_sel" + messageText, selectedDate);
+            param.put("dp_w" + messageText, week);
+            return selectedDate;
+        }
     }
+
+
+    public int getWeek() {
+        return week;
+    }
+
 
     public InlineKeyboardMarkup generate() {
 
@@ -96,7 +107,7 @@ public class FullDatePicker {
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
         DateFormat df2 = new SimpleDateFormat("MMM");
         String currentDate = df.format(tempDate.toDate());
-        String monthName = df2.format(tempDate) + " " + tempDate.getYear();
+        String monthName = df2.format(tempDate.toDate()) + " " + tempDate.getYear();
 
         keyboard.next(3, 7);
         keyboard.addButton("<", Json.set("dp_dt", df.format(prevMonth)).set("step", step));
@@ -114,7 +125,7 @@ public class FullDatePicker {
     private void generateBody(IKeyboard keyboard, Date prevMonth, Date nextMonth){
 
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-        String monthYear = df.format(tempDate.toDate());
+        String monthYear = df.format(tempDate.toDate()).substring(2);
 
         for (LinkedList<Integer> weekDates : monthDates) {
             keyboard.next(7);
@@ -144,16 +155,29 @@ public class FullDatePicker {
         }
     }
 
-    private void calculateDates() {
+    private void calculateDates(TelegramLongPollingBot bot, Message message) {
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        if (queryData.containsKey("dp_w")) {
+            week = queryData.getInt("dp_w");
+            selectedDate = new DateTime(cal.getTime());
+            new ClearMessage().removeAsLater(bot, message.getChatId());
+        }
 
         if (queryData.containsKey("dp_sel")) {
             selectedDate = new DateTime(queryData.getDate("dp_sel"));
+            new ClearMessage().removeAsLater(bot, message.getChatId());
         }
 
         if (queryData.containsKey("dp_dt")) {
             tempDate = new DateTime(queryData.getDate("dp_dt"));
         } else {
-            tempDate = new DateTime();
+            tempDate = new DateTime(cal.getTime());
         }
 
         DateTime firstDay = tempDate.dayOfMonth().withMinimumValue();
@@ -186,5 +210,8 @@ public class FullDatePicker {
             monthDates.add(weekDates);
         }
 
+        queryData.remove("dp_dt");
+        queryData.remove("dp_sel");
+        queryData.remove("dp_w");
     }
 }

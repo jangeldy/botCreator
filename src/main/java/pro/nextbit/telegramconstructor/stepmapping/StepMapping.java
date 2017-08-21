@@ -92,7 +92,7 @@ public class StepMapping {
         return handlingPath;
     }
 
-    private static void setHandlingPath(String handlingPath) {
+    private void setHandlingPath(String handlingPath) {
         StepMapping.handlingPath = handlingPath;
     }
 }
