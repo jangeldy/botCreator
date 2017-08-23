@@ -11,8 +11,9 @@
 
     <repositories>
         <repository>
-            <id>my</id>
-            <url>https://github.com/zhangeldy/telegramconstructor/raw/master/lib/telegramconstructor-1.0.jar</url>
+            <id>project-common</id>
+            <name>Project Common</name>
+            <url>https://github.com/zhangeldy/mvn-repo/raw/master/</url>
         </repository>
     </repositories>
 
@@ -87,7 +88,7 @@
         <dependency>
             <groupId>pro.nextbit.telegramconstructor</groupId>
             <artifactId>telegramconstructor</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
         </dependency>
 
     </dependencies>
