@@ -8,6 +8,14 @@
     <artifactId>botCreator</artifactId>
     <version>1.0</version>
 
+
+    <repositories>
+        <repository>
+            <id>my</id>
+            <url>https://github.com/zhangeldy/telegramconstructor/raw/master/lib/telegramconstructor-1.0.jar</url>
+        </repository>
+    </repositories>
+
     <dependencies>
 
         <dependency>
@@ -80,8 +88,6 @@
             <groupId>pro.nextbit.telegramconstructor</groupId>
             <artifactId>telegramconstructor</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/telegramconstructor-1.0.jar</systemPath>
         </dependency>
 
     </dependencies>
